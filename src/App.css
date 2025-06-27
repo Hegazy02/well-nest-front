@@ -1,0 +1,20 @@
+:root {
+    --primary-gray: #f5f5f5;
+    --secondary-gray: #87888a
+}
+
+.primary-bg-gray {
+    background-color: var(--primary-gray);
+}
+
+.primary-color-gray {
+    color: var(--primary-gray);
+}
+
+.secondary-color-gray {
+    color: var(--secondary-gray);
+}
+
+.secondary-bg-gray {
+    background-color: var(--secondary-gray);
+}
