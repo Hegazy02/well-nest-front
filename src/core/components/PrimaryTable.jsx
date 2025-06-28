@@ -1,32 +1,35 @@
 import PrimaryTableRow from "./PrimaryTableRow";
-import React from "react";
+import React, { memo } from "react";
 
-const PrimaryTable = ({ children, headerData }) => {
-  const columns = children?.[0]?.props?.columns;
+const RowWrapper = memo(({ child, isLast }) => (
+  <>
+    {child}
+    {!isLast && <hr className="border-gray-300" />}
+  </>
+));
+
+const PrimaryTable = ({ children, columns }) => {
+  const childArray = React.Children.toArray(children);
+
   return (
     <div className="flex flex-col gap-4 border rounded-2xl border-gray-300">
       <PrimaryTableRow
-        columns={columns}
-        classes={
-          "bg-gray-200 primary-bg-gray rounded-t-2xl secondary-color-gray px-2  py-3"
-        }
+        columns={columns.map((item) => item.className)}
+        classes="bg-gray-200 primary-bg-gray rounded-t-2xl secondary-color-gray px-2  py-3"
       >
-        {headerData.map((item, index) => (
-          <div key={index}>{item}</div>
+        {columns.map((item, index) => (
+          <div key={index}>{item.name}</div>
         ))}
       </PrimaryTableRow>
-      {React.Children.map(children, (child, index) =>
-        React.cloneElement(
-          <>
-            {child}
-            {index !== children.length - 1 && (
-              <hr className="border-gray-300" />
-            )}
-          </>
-        )
-      )}{" "}
+      {childArray.map((child, index) => (
+        <RowWrapper
+          key={child.key}
+          child={child}
+          isLast={index === childArray.length - 1}
+        />
+      ))}
     </div>
   );
 };
 
-export default PrimaryTable;
+export default memo(PrimaryTable);
