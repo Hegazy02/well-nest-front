@@ -1,7 +1,7 @@
 import React from "react";
 
 const PrimaryTableRow = ({ children, columns = [], classes }) => {
-  const className = `flex w-full gap-1 items-center ${classes}`;
+  const className = `px-4 flex w-full gap-1 items-center ${classes}`;
 
   return (
       <div className={className}>
