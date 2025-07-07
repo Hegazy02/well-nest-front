@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import {  FaRegBuilding } from "react-icons/fa";
+import { FaRegBuilding } from "react-icons/fa";
 import { TiTimesOutline } from "react-icons/ti";
 import { MdOutlineCloudUpload } from "react-icons/md";
 
@@ -39,14 +39,8 @@ const AddDoctor = () => {
   // Simulate fetching departments
   useEffect(() => {
     const fetchDepartments = async () => {
-      // Simulated API call
-      const response = await apiClient.get("/departments/all", {
-        params: { isAll: true },
-      });
-
-      setTimeout(() => {
-        setDepartments(response.data.data);
-      }, 500);
+      const response = await apiClient.get("/departments/all");
+      setDepartments(response.data.data);
     };
     fetchDepartments();
   }, []);
@@ -170,10 +164,8 @@ const AddDoctor = () => {
     setLoading(true);
 
     try {
-      // Simulate API call
       const formDataToSend = new FormData();
 
-      // Append all form fields
       Object.keys(formData).forEach((key) => {
         if (key === "workExperience") {
           // Append work experience as individual items with array notation
@@ -196,11 +188,9 @@ const AddDoctor = () => {
             );
           });
         } else {
-          // Append other fields (skip image if null)
           formDataToSend.append(key, formData[key]);
         }
       });
-      console.log("depId", formData.departmentId);
 
       await apiClient.post("/doctors", formDataToSend, {
         headers: {
@@ -240,11 +230,11 @@ const AddDoctor = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 ">
+    <div className="min-h-screen bg-gray-50 rounded-[8px]">
       <div className="">
-        <div className="bg-white  overflow-hidden">
+        <div className="bg-white  overflow-hidden rounded-[8px]">
           {/* Header */}
-          <div className="flex items-center gap-4 bg-[#a2f2ee] px-8 py-6 border-b border-gray-200">
+          <div className="flex items-center gap-4 bg-[#f3f4f6] px-8 py-6 border-b border-gray-200">
             <Link to="/doctors">
               <IoIosArrowBack className="h-5 w-5 text-[#233955]" />
             </Link>
@@ -264,7 +254,7 @@ const AddDoctor = () => {
           </div>
 
           {/* Form */}
-          <div className="p-8 space-y-8">
+          <div className="p-8 space-y-8  md:w-9/10 mx-auto">
             {/* Personal Information Section */}
             <div className="space-y-6">
               <div className="flex items-center space-x-2 mb-6">

@@ -4,16 +4,18 @@ import { FiEdit } from "react-icons/fi";
 import { AiOutlineDelete } from "react-icons/ai";
 import PrimaryDropDown from "../../../core/components/PrimaryDropDown";
 import { apiClient } from "../../../core/utils/apiClient";
+import PrimaryModal from "../../../core/components/PrimaryModal";
+import { Endpoints } from "../../../core/utils/endpoints";
+import { toast } from "react-toastify";
 
 const DoctorsList = ({ state, refetch, dispatch }) => {
-
   const columns = [
-    { name: "Name", className: "flex-2" },
-    { name: "Phone", className: "flex-1" },
-    { name: "Department", className: "flex-1" },
-    { name: "Patients", className: "flex-1" },
-    { name: "Today's Appointments", className: "flex-1" },
-    { name: "Availability", className: "flex-1" },
+    { name: "Name", className: "flex-3" },
+    { name: "Phone", className: "flex-2" },
+    { name: "Department", className: "flex-2" },
+    { name: "Patients", className: "flex-2" },
+    { name: "Today's Appointments", className: "flex-2" },
+    { name: "Availability", className: "flex-2" },
     { name: "Actions", className: "flex-1" },
   ];
 
@@ -28,7 +30,6 @@ const DoctorsList = ({ state, refetch, dispatch }) => {
     return null;
   };
   const changeAvailabilityHandler = async (doctorId, index) => {
-    console.log("index", index);
     try {
       const retult = await apiClient.patch(`/doctors/${doctorId}`, {
         availability: index == 0,
@@ -54,6 +55,24 @@ const DoctorsList = ({ state, refetch, dispatch }) => {
       console.log("error", error);
     }
   };
+  const deleteDoctorHandler = async (doctorId) => {
+    try {
+      const retult = await apiClient.delete(`${Endpoints.doctors}/${doctorId}`);
+      dispatch({
+        type: "UPDATE_DATA",
+        payload: {
+          data: {
+            ...state.data,
+            data: state.data.data.filter((doctor) => doctor._id !== doctorId),
+          },
+        },
+      });
+      toast.success("Doctor deleted successfully");
+    } catch (error) {
+      console.log("error", error);
+      toast.error("Something went wrong");
+    }
+  };
 
   return (
     <PrimaryTable columns={columns} classes={"min-h-[85vh]"}>
@@ -62,7 +81,7 @@ const DoctorsList = ({ state, refetch, dispatch }) => {
         : state.data.data?.map((doctor) => {
             return (
               <PrimaryTableRow
-                key={doctor.id}
+                key={doctor._id}
                 columns={columns.map((item) => item.className)}
               >
                 <div className="flex items-center gap-2">
@@ -75,8 +94,8 @@ const DoctorsList = ({ state, refetch, dispatch }) => {
                     className="w-10 h-10 rounded-full object-cover "
                   />
                   <p className="text-md font-bold">
-                    {doctor.name.length > 30
-                      ? `${doctor.name.slice(0, 30)}...`
+                    {doctor.name.length > 25
+                      ? `${doctor.name.slice(0, 25)}...`
                       : doctor.name}
                   </p>
                 </div>
@@ -103,7 +122,14 @@ const DoctorsList = ({ state, refetch, dispatch }) => {
 
                 <div className="flex gap-4 text-lg text-[#4B4D4F]">
                   <FiEdit className="cursor-pointer" />
-                  <AiOutlineDelete className="cursor-pointer" />
+                  <PrimaryModal
+                    title="Are you sure you want to delete this doctor?"
+                    onConfirm={() => {
+                      deleteDoctorHandler(doctor._id);
+                    }}
+                  >
+                    <AiOutlineDelete className="cursor-pointer" />
+                  </PrimaryModal>
                 </div>
               </PrimaryTableRow>
             );

@@ -24,7 +24,7 @@ const Doctors = () => {
     // refetch({ department: index });
   };
   const selectAvailabilityHandler = (index) => {
-    refetch({ availability: index == 0 ? true : false });
+    refetch({ availability: index == 1 ? true : index == 2 ? false : null });
   };
   const pageChangeHandler = ({ selected: index }) => {
     refetch({ page: index + 1 });
@@ -44,6 +44,7 @@ const Doctors = () => {
             text="Availability"
             onSelect={selectAvailabilityHandler}
           >
+            <p>All</p>
             <p>Available</p>
             <p>Unavailable</p>
           </PrimaryDropDown>
@@ -51,6 +52,9 @@ const Doctors = () => {
         <Link to="/doctors/add">
           <PrimaryButton>Add Doctor</PrimaryButton>
         </Link>
+        {/* <Drawer buttonText="Add Doctor" title="Add">
+          <AddDoctor />
+        </Drawer> */}
       </header>
       <DoctorsList state={state} refetch={refetch} dispatch={dispatch} />
       <Pagination
