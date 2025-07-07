@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useForm, useFieldArray } from "react-hook-form";
 import { FaRegBuilding } from "react-icons/fa";
 import { TiTimesOutline } from "react-icons/ti";
 import { MdOutlineCloudUpload } from "react-icons/md";
@@ -16,160 +17,174 @@ import { toast } from "react-toastify";
 import { apiClient } from "../../core/utils/apiClient";
 import { Link } from "react-router";
 import { IoIosArrowBack } from "react-icons/io";
+import { Endpoints } from "../../core/utils/endpoints";
+import { useParams } from "react-router";
 
 const AddDoctor = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    departmentId: "",
-    appointmentDuration: "",
-    availability: true,
-    image: null,
-    about: "",
-    phone: "",
-    email: "",
-    address: "",
-    workExperience: [],
-  });
+  const { id } = useParams(); // doctorId will be "aosdg5sdg4g88r"
 
   const [departments, setDepartments] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
-  const [errors, setErrors] = useState({});
 
-  // Simulate fetching departments
-  useEffect(() => {
-    const fetchDepartments = async () => {
-      const response = await apiClient.get("/departments/all");
-      setDepartments(response.data.data);
-    };
-    fetchDepartments();
-  }, []);
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors, isSubmitting },
+    watch,
+    reset,
+    getValues,
+  } = useForm({
+    defaultValues: {
+      name: "",
+      departmentId: "",
+      appointmentDuration: "",
+      availability: true,
+      image: null,
+      about: "",
+      phone: "",
+      email: "",
+      address: "",
+      workExperience: [],
+    },
+  });
 
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "workExperience",
+  });
+
+  // Watch the image field for preview
+  const watchedImage = watch("image");
+
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return "";
+
+    try {
+      const date = new Date(dateString);
+      return date.toISOString().split("T")[0];
+    } catch (e) {
+      console.error("Error formatting date:", e);
+      return "";
     }
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData((prev) => ({ ...prev, image: file }));
+  // Fetch departments
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const response = await apiClient.get("/departments/all");
+        setDepartments(response.data.data);
+      } catch (error) {
+        console.error("Error fetching departments:", error);
+        toast("Error fetching departments", { type: "error" });
+      }
+    };
+    const fetchDoctorData = async (id) => {
+      try {
+        const response = await apiClient.get(`${Endpoints.doctors}/${id}`);
+        const formattedWorkExperience = response.data.data.workExperience.map(
+          (exp) => ({
+            ...exp,
+            from: formatDateForInput(exp.from),
+            to: formatDateForInput(exp.to),
+          })
+        );
+        const data = {
+          name: response.data.data.name,
+          appointmentDuration: response.data.data.appointmentDuration,
+          availability: response.data.data.availability,
+          image: response.data.data.image,
+          about: response.data.data.about,
+          phone: response.data.data.phone,
+          email: response.data.data.email,
+          address: response.data.data.address,
+          departmentId: response.data.data.department._id,
+          workExperience: formattedWorkExperience,
+        };
+        reset(data);
+      } catch (error) {
+        console.error("Error fetching doctor data:", error);
+        toast("Error fetching doctor data", { type: "error" });
+      }
+    };
+    fetchDepartments();
+
+    if (id) {
+      fetchDoctorData(id);
+    }
+  }, []);
+
+  // Handle image preview
+  useEffect(() => {
+    if (typeof getValues("image") === "string") {
+      setImagePreview(getValues("image"));
+      return;
+    }
+    if (watchedImage && watchedImage[0] instanceof File) {
+      const file = watchedImage[0];
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
       };
       reader.readAsDataURL(file);
+    } else {
+      setImagePreview(null);
     }
-  };
+  }, [watchedImage]);
 
   const addWorkExperience = () => {
-    setFormData((prev) => ({
-      ...prev,
-      workExperience: [
-        ...prev.workExperience,
-        {
-          position: "",
-          workPlace: "",
-          from: "",
-          to: "",
-        },
-      ],
-    }));
-  };
-
-  const removeWorkExperience = (index) => {
-    setFormData((prev) => ({
-      ...prev,
-      workExperience: prev.workExperience.filter((_, i) => i !== index),
-    }));
-  };
-
-  const handleWorkExperienceChange = (index, field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      workExperience: prev.workExperience.map((exp, i) =>
-        i === index ? { ...exp, [field]: value } : exp
-      ),
-    }));
-    // Clear error for this specific field when user starts typing
-    const errorKey = `workExperience.${index}.${field}`;
-    if (errors[errorKey]) {
-      setErrors((prev) => ({ ...prev, [errorKey]: "" }));
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.name.trim()) newErrors.name = "Name is required";
-    if (!formData.departmentId)
-      newErrors.departmentId = "Department is required";
-    if (!formData.appointmentDuration || formData.appointmentDuration <= 0) {
-      newErrors.appointmentDuration = "Session duration must be greater than 0";
-    }
-    if (!formData.phone.trim()) newErrors.phone = "Phone is required";
-    if (formData.phone && !/^\d{11}$/.test(formData.phone))
-      newErrors.phone = "Phone is invalid";
-    if (!formData.address.trim()) newErrors.address = "Address is required";
-
-    if (!formData.about.trim()) newErrors.about = "About is required";
-    if (formData.about.length < 20)
-      newErrors.about = "About must be at least 20 characters";
-
-    // Email validation
-    if (!formData.email.trim()) newErrors.email = "Email is required";
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (formData.email && !emailRegex.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
-    if (!formData.image) {
-      newErrors.image = "Image is required";
-    }
-    // Work Experience validation
-    formData.workExperience.forEach((exp, index) => {
-      if (!exp.position.trim()) {
-        newErrors[`workExperience.${index}.position`] = "Position is required";
-      }
-      if (!exp.workPlace.trim()) {
-        newErrors[`workExperience.${index}.workPlace`] =
-          "Workplace is required";
-      }
-      if (!exp.from) {
-        newErrors[`workExperience.${index}.from`] = "From date is required";
-      }
-      if (!exp.to) {
-        newErrors[`workExperience.${index}.to`] = "To date is required";
-      }
-      if (exp.from && exp.to && new Date(exp.from) > new Date(exp.to)) {
-        newErrors[`workExperience.${index}.from`] =
-          "From date must be before To date";
-      }
+    append({
+      position: "",
+      workPlace: "",
+      from: "",
+      to: "",
     });
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
   };
+  const postDoctor = async (data) => {
+    try {
+      await apiClient.post("/doctors", data);
+      toast("Doctor added successfully", { type: "success" });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!validateForm()) return;
-
-    setLoading(true);
-
+      // Reset form
+      reset();
+      setImagePreview(null);
+    } catch (error) {
+      console.log("error", error);
+      toast(
+        `Error adding doctor: ${
+          error.response?.data?.message ?? error.message
+        }`,
+        {
+          type: "error",
+        }
+      );
+    }
+  };
+  const updateDoctor = async (data) => {
+    try {
+      await apiClient.patch(`/doctors/${id}`, data);
+      toast("Doctor updated successfully", { type: "success" });
+    } catch (error) {
+      console.log("error", error);
+      toast(
+        `Error updating doctor: ${
+          error.response?.data?.message ?? error.message
+        }`,
+        {
+          type: "error",
+        }
+      );
+    }
+  };
+  const onSubmit = async (data) => {
     try {
       const formDataToSend = new FormData();
 
-      Object.keys(formData).forEach((key) => {
+      Object.keys(data).forEach((key) => {
         if (key === "workExperience") {
           // Append work experience as individual items with array notation
-          formData.workExperience.forEach((experience, index) => {
+          data.workExperience.forEach((experience, index) => {
             formDataToSend.append(
               `workExperience[${index}][position]`,
               experience.position
@@ -187,52 +202,95 @@ const AddDoctor = () => {
               experience.to
             );
           });
-        } else {
-          formDataToSend.append(key, formData[key]);
+        } else if (key === "image") {
+          // Handle image file
+          if (data.image && data.image[0] instanceof File) {
+            formDataToSend.append("image", data.image[0]);
+          } else {
+            formDataToSend.append("image", data.image);
+          }
+        } else if (key != "email") {
+          formDataToSend.append(key, data[key]);
         }
       });
 
-      await apiClient.post("/doctors", formDataToSend, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      toast("Doctor added successfully", { type: "success" });
-
-      // Reset form
-      setFormData({
-        name: "",
-        departmentId: "",
-        appointmentDuration: "",
-        availability: true,
-        image: null,
-        about: "",
-        phone: "",
-        email: "",
-        address: "",
-        workExperience: [],
-      });
-      setImagePreview(null);
+      if (id) {
+        await updateDoctor(formDataToSend);
+      } else {
+        await postDoctor(formDataToSend);
+      }
     } catch (error) {
-      console.error("Error adding doctor:", error);
-      toast(
-        `Error adding doctor : ${
-          error.response?.data?.message ?? error.message
-        }`,
-        {
-          type: "error",
-        }
-      );
-    } finally {
-      setLoading(false);
+      console.error("Error with doctor:", error);
     }
   };
+
+  // Input field component for reusability
+  const InputField = ({
+    label,
+    name,
+    type = "text",
+    placeholder,
+    icon: Icon,
+    required = false,
+    className = "",
+    ...props
+  }) => (
+    <div className={className}>
+      <label className="block text-sm font-medium text-[#233955] mb-2">
+        {label} {required && "*"}
+      </label>
+      <div className="relative">
+        {Icon && (
+          <Icon className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+        )}
+        <input
+          type={type}
+          {...register(name, {
+            required: required ? `${label} is required` : false,
+            ...(type === "email" && {
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: "Please enter a valid email address",
+              },
+            }),
+            ...(name === "phone" && {
+              pattern: {
+                value: /^\d{11}$/,
+                message: "Phone number must be 11 digits",
+              },
+            }),
+            ...(name === "appointmentDuration" && {
+              min: {
+                value: 1,
+                message: "Session duration must be greater than 0",
+              },
+            }),
+            ...(name === "about" && {
+              minLength: {
+                value: 20,
+                message: "About must be at least 20 characters",
+              },
+            }),
+          })}
+          className={`w-full ${Icon ? "pl-12" : ""} ${
+            Icon ? "pr-4" : "px-4"
+          } py-3 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-[#a2f2ee] focus:border-[#a2f2ee] transition-colors ${
+            errors[name] ? "border-red-300" : "border-gray-200"
+          }`}
+          placeholder={placeholder}
+          {...props}
+        />
+      </div>
+      {errors[name] && (
+        <p className="mt-1 text-sm text-red-600">{errors[name].message}</p>
+      )}
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 rounded-[8px]">
       <div className="">
-        <div className="bg-white  overflow-hidden rounded-[8px]">
+        <div className="bg-white overflow-hidden rounded-[8px]">
           {/* Header */}
           <div className="flex items-center gap-4 bg-[#f3f4f6] px-8 py-6 border-b border-gray-200">
             <Link to="/doctors">
@@ -244,7 +302,7 @@ const AddDoctor = () => {
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-[#233955]">
-                  Add New Doctor
+                  {id ? "Update" : "Add New"} Doctor
                 </h1>
                 <p className="text-gray-600 mt-1">
                   Fill in the doctor's information to add them to the system
@@ -254,7 +312,10 @@ const AddDoctor = () => {
           </div>
 
           {/* Form */}
-          <div className="p-8 space-y-8  md:w-9/10 mx-auto">
+          <form
+            onSubmit={handleSubmit((data) => onSubmit(data))}
+            className="p-8 space-y-8 md:w-9/10 mx-auto"
+          >
             {/* Personal Information Section */}
             <div className="space-y-6">
               <div className="flex items-center space-x-2 mb-6">
@@ -266,24 +327,12 @@ const AddDoctor = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Name */}
-                <div>
-                  <label className="block text-sm font-medium text-[#233955] mb-2">
-                    Full Name *
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className={`w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-[#a2f2ee] focus:border-[#a2f2ee] transition-colors ${
-                      errors.name ? "border-red-300" : "border-gray-200"
-                    }`}
-                    placeholder="Enter doctor's full name"
-                  />
-                  {errors.name && (
-                    <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-                  )}
-                </div>
+                <InputField
+                  label="Full Name"
+                  name="name"
+                  placeholder="Enter doctor's full name"
+                  required
+                />
 
                 {/* Department */}
                 <div>
@@ -291,9 +340,9 @@ const AddDoctor = () => {
                     Department *
                   </label>
                   <select
-                    name="departmentId"
-                    value={formData.departmentId}
-                    onChange={handleInputChange}
+                    {...register("departmentId", {
+                      required: "Department is required",
+                    })}
                     className={`w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-[#a2f2ee] focus:border-[#a2f2ee] transition-colors ${
                       errors.departmentId ? "border-red-300" : "border-gray-200"
                     }`}
@@ -307,47 +356,28 @@ const AddDoctor = () => {
                   </select>
                   {errors.departmentId && (
                     <p className="mt-1 text-sm text-red-600">
-                      {errors.departmentId}
+                      {errors.departmentId.message}
                     </p>
                   )}
                 </div>
 
                 {/* Session Duration */}
-                <div>
-                  <label className="block text-sm font-medium text-[#233955] mb-2">
-                    Session Duration (minutes) *
-                  </label>
-                  <div className="relative">
-                    <CiClock2 className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                    <input
-                      type="number"
-                      name="appointmentDuration"
-                      value={formData.appointmentDuration}
-                      onChange={handleInputChange}
-                      min="1"
-                      className={`w-full pl-12 pr-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-[#a2f2ee] focus:border-[#a2f2ee] transition-colors ${
-                        errors.appointmentDuration
-                          ? "border-red-300"
-                          : "border-gray-200"
-                      }`}
-                      placeholder="30"
-                    />
-                  </div>
-                  {errors.appointmentDuration && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {errors.appointmentDuration}
-                    </p>
-                  )}
-                </div>
+                <InputField
+                  label="Session Duration (minutes)"
+                  name="appointmentDuration"
+                  type="number"
+                  placeholder="30"
+                  icon={CiClock2}
+                  required
+                  min="1"
+                />
 
                 {/* Availability */}
                 <div className="flex items-center space-x-3">
                   <input
                     type="checkbox"
                     id="availability"
-                    name="availability"
-                    checked={formData.availability}
-                    onChange={handleInputChange}
+                    {...register("availability")}
                     className="h-5 w-5 text-[#233955] focus:ring-[#a2f2ee] border-gray-300 rounded"
                   />
                   <label
@@ -362,7 +392,7 @@ const AddDoctor = () => {
               {/* Image Upload */}
               <div>
                 <label className="block text-sm font-medium text-[#233955] mb-2">
-                  Profile Image
+                  Profile Image *
                 </label>
                 <div className="flex items-center space-x-6">
                   <div className="flex-shrink-0">
@@ -382,7 +412,11 @@ const AddDoctor = () => {
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={handleImageChange}
+                      {...register("image", {
+                        required: getValues("image")
+                          ? false
+                          : "Image is required",
+                      })}
                       className="hidden"
                       id="image-upload"
                     />
@@ -395,7 +429,7 @@ const AddDoctor = () => {
                     </label>
                     {errors.image && (
                       <p className="mt-1 text-sm text-red-600">
-                        {errors.image}
+                        {errors.image.message}
                       </p>
                     )}
                   </div>
@@ -405,18 +439,26 @@ const AddDoctor = () => {
               {/* About */}
               <div>
                 <label className="block text-sm font-medium text-[#233955] mb-2">
-                  About
+                  About *
                 </label>
                 <textarea
-                  name="about"
-                  value={formData.about}
-                  onChange={handleInputChange}
+                  {...register("about", {
+                    required: "About is required",
+                    minLength: {
+                      value: 20,
+                      message: "About must be at least 20 characters",
+                    },
+                  })}
                   rows="4"
-                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#a2f2ee] focus:border-[#a2f2ee] transition-colors"
+                  className={`w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-[#a2f2ee] focus:border-[#a2f2ee] transition-colors ${
+                    errors.about ? "border-red-300" : "border-gray-200"
+                  }`}
                   placeholder="Brief description about the doctor's expertise and background"
                 />
                 {errors.about && (
-                  <p className="mt-1 text-sm text-red-600">{errors.about}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.about.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -432,75 +474,36 @@ const AddDoctor = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Phone */}
-                <div>
-                  <label className="block text-sm font-medium text-[#233955] mb-2">
-                    Phone Number *
-                  </label>
-                  <div className="relative">
-                    <CiPhone className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className={`w-full pl-12 pr-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-[#a2f2ee] focus:border-[#a2f2ee] transition-colors ${
-                        errors.phone ? "border-red-300" : "border-gray-200"
-                      }`}
-                      placeholder="01224568789"
-                    />
-                  </div>
-                  {errors.phone && (
-                    <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
-                  )}
-                </div>
+                <InputField
+                  label="Phone Number"
+                  name="phone"
+                  type="tel"
+                  placeholder="01224568789"
+                  icon={CiPhone}
+                  required
+                />
 
                 {/* Email */}
-                <div>
-                  <label className="block text-sm font-medium text-[#233955] mb-2">
-                    Email Address *
-                  </label>
-                  <div className="relative">
-                    <CiMail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className={`w-full pl-12 pr-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-[#a2f2ee] focus:border-[#a2f2ee] transition-colors ${
-                        errors.email ? "border-red-300" : "border-gray-200"
-                      }`}
-                      placeholder="doctor@gmail.com"
-                    />
-                  </div>
-                  {errors.email && (
-                    <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                  )}
-                </div>
+                <InputField
+                  label="Email Address"
+                  name="email"
+                  type="email"
+                  placeholder="doctor@gmail.com"
+                  icon={CiMail}
+                  required
+                  disabled={id ? true : false}
+                  className="text-gray-500"
+                />
 
                 {/* Address */}
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-[#233955] mb-2">
-                    Address *
-                  </label>
-                  <div className="relative">
-                    <CiMapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                    <input
-                      type="text"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      className={`w-full pl-12 pr-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-[#a2f2ee] focus:border-[#a2f2ee] transition-colors ${
-                        errors.address ? "border-red-300" : "border-gray-200"
-                      }`}
-                      placeholder="123 Medical Center Dr, City, State 12345"
-                    />
-                  </div>
-                  {errors.address && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {errors.address}
-                    </p>
-                  )}
-                </div>
+                <InputField
+                  label="Address"
+                  name="address"
+                  placeholder="123 Medical Center Dr, City, State 12345"
+                  icon={CiMapPin}
+                  required
+                  className="md:col-span-2"
+                />
               </div>
             </div>
 
@@ -513,14 +516,14 @@ const AddDoctor = () => {
                     Work Experience
                   </h2>
                 </div>
-                <PrimaryButton onClick={addWorkExperience}>
+                <PrimaryButton type="button" onClick={addWorkExperience}>
                   Add Experience
                 </PrimaryButton>
               </div>
 
-              {formData.workExperience.map((exp, index) => (
+              {fields.map((field, index) => (
                 <div
-                  key={index}
+                  key={field.id}
                   className="bg-gray-50 rounded-xl p-6 space-y-4"
                 >
                   <div className="flex items-center justify-between">
@@ -529,7 +532,7 @@ const AddDoctor = () => {
                     </h3>
                     <button
                       type="button"
-                      onClick={() => removeWorkExperience(index)}
+                      onClick={() => remove(index)}
                       className="text-red-500 hover:text-red-700 transition-colors"
                     >
                       <TiTimesOutline className="h-5 w-5 cursor-pointer" />
@@ -543,24 +546,19 @@ const AddDoctor = () => {
                       </label>
                       <input
                         type="text"
-                        value={exp.position}
-                        onChange={(e) =>
-                          handleWorkExperienceChange(
-                            index,
-                            "position",
-                            e.target.value
-                          )
-                        }
+                        {...register(`workExperience.${index}.position`, {
+                          required: "Position is required",
+                        })}
                         className={`w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-[#a2f2ee] focus:border-[#a2f2ee] transition-colors ${
-                          errors[`workExperience.${index}.position`]
+                          errors.workExperience?.[index]?.position
                             ? "border-red-300"
                             : "border-gray-200"
                         }`}
                         placeholder="Senior Cardiologist"
                       />
-                      {errors[`workExperience.${index}.position`] && (
+                      {errors.workExperience?.[index]?.position && (
                         <p className="mt-1 text-sm text-red-600">
-                          {errors[`workExperience.${index}.position`]}
+                          {errors.workExperience[index].position.message}
                         </p>
                       )}
                     </div>
@@ -571,24 +569,19 @@ const AddDoctor = () => {
                       </label>
                       <input
                         type="text"
-                        value={exp.workPlace}
-                        onChange={(e) =>
-                          handleWorkExperienceChange(
-                            index,
-                            "workPlace",
-                            e.target.value
-                          )
-                        }
+                        {...register(`workExperience.${index}.workPlace`, {
+                          required: "Workplace is required",
+                        })}
                         className={`w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-[#a2f2ee] focus:border-[#a2f2ee] transition-colors ${
-                          errors[`workExperience.${index}.workPlace`]
+                          errors.workExperience?.[index]?.workPlace
                             ? "border-red-300"
                             : "border-gray-200"
                         }`}
                         placeholder="General Hospital"
                       />
-                      {errors[`workExperience.${index}.workPlace`] && (
+                      {errors.workExperience?.[index]?.workPlace && (
                         <p className="mt-1 text-sm text-red-600">
-                          {errors[`workExperience.${index}.workPlace`]}
+                          {errors.workExperience[index].workPlace.message}
                         </p>
                       )}
                     </div>
@@ -601,24 +594,19 @@ const AddDoctor = () => {
                         <CiCalendar className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                         <input
                           type="date"
-                          value={exp.from}
-                          onChange={(e) =>
-                            handleWorkExperienceChange(
-                              index,
-                              "from",
-                              e.target.value
-                            )
-                          }
+                          {...register(`workExperience.${index}.from`, {
+                            required: "From date is required",
+                          })}
                           className={`w-full pl-12 pr-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-[#a2f2ee] focus:border-[#a2f2ee] transition-colors ${
-                            errors[`workExperience.${index}.from`]
+                            errors.workExperience?.[index]?.from
                               ? "border-red-300"
                               : "border-gray-200"
                           }`}
                         />
                       </div>
-                      {errors[`workExperience.${index}.from`] && (
+                      {errors.workExperience?.[index]?.from && (
                         <p className="mt-1 text-sm text-red-600">
-                          {errors[`workExperience.${index}.from`]}
+                          {errors.workExperience[index].from.message}
                         </p>
                       )}
                     </div>
@@ -631,24 +619,32 @@ const AddDoctor = () => {
                         <CiCalendar className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                         <input
                           type="date"
-                          value={exp.to}
-                          onChange={(e) =>
-                            handleWorkExperienceChange(
-                              index,
-                              "to",
-                              e.target.value
-                            )
-                          }
+                          {...register(`workExperience.${index}.to`, {
+                            required: "To date is required",
+                            validate: (value) => {
+                              const fromDate = watch(
+                                `workExperience.${index}.from`
+                              );
+                              if (
+                                fromDate &&
+                                value &&
+                                new Date(fromDate) > new Date(value)
+                              ) {
+                                return "To date must be after From date";
+                              }
+                              return true;
+                            },
+                          })}
                           className={`w-full pl-12 pr-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-[#a2f2ee] focus:border-[#a2f2ee] transition-colors ${
-                            errors[`workExperience.${index}.to`]
+                            errors.workExperience?.[index]?.to
                               ? "border-red-300"
                               : "border-gray-200"
                           }`}
                         />
                       </div>
-                      {errors[`workExperience.${index}.to`] && (
+                      {errors.workExperience?.[index]?.to && (
                         <p className="mt-1 text-sm text-red-600">
-                          {errors[`workExperience.${index}.to`]}
+                          {errors.workExperience[index].to.message}
                         </p>
                       )}
                     </div>
@@ -659,18 +655,23 @@ const AddDoctor = () => {
 
             {/* Submit Button */}
             <div className="pt-6 w-xs mx-auto md:w-xl">
-              <PrimaryButton onClick={handleSubmit} className={"w-full"}>
-                {loading ? (
+              <PrimaryButton
+                type="submit"
+                className="w-full"
+                disabled={isSubmitting}
+                hasIcon={!id}
+              >
+                {isSubmitting ? (
                   <div className="flex items-center justify-center space-x-2">
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    <span>Adding Doctor...</span>
+                    <span>{id ? "Updating..." : "Adding..."}</span>
                   </div>
                 ) : (
-                  "Add Doctor"
+                  <span>{id ? "Update Doctor" : "Add Doctor"}</span>
                 )}
               </PrimaryButton>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>
