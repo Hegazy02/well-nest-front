@@ -3,4 +3,5 @@ export class Endpoints {
   static prodUrl = "https://well-nest-back.vercel.app";
   static baseUrl = Endpoints.devUrl;
   static doctors = `doctors`;
+  static departments = `departments`;
 }

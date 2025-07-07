@@ -21,7 +21,7 @@ const PrimaryTable = ({ children, columns, classes }) => {
     >
       <PrimaryTableRow
         columns={columns.map((item) => item.className)}
-        classes="bg-gray-200 primary-bg-gray rounded-t-2xl secondary-color-gray px-4  py-4"
+        classes="bg-gray-200 primary-bg-gray rounded-t-2xl secondary-color-gray py-4"
       >
         {columns.map((item, index) => (
           <div key={index}>{item.name}</div>
