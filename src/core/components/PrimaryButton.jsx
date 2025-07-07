@@ -1,9 +1,9 @@
 import { FaPlus } from "react-icons/fa";
 
-const PrimaryButton = ({ children, onClick, className, hasIcon = true }) => {
+const PrimaryButton = ({ children, onClick, className, hasIcon = true ,type}) => {
   return (
     <button
-      type="button"
+      type={type??"button"} 
       className={
         "bg-[#233955] text-sm text-white px-4 py-2 rounded-[8px] flex justify-center gap-2 items-center active:scale-99 active:bg-[#315078] cursor-pointer" +
         " " +

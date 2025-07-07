@@ -7,6 +7,7 @@ import { apiClient } from "../../../core/utils/apiClient";
 import PrimaryModal from "../../../core/components/PrimaryModal";
 import { Endpoints } from "../../../core/utils/endpoints";
 import { toast } from "react-toastify";
+import { Link } from "react-router";
 
 const DoctorsList = ({ state, refetch, dispatch }) => {
   const columns = [
@@ -121,7 +122,9 @@ const DoctorsList = ({ state, refetch, dispatch }) => {
                 </PrimaryDropDown>
 
                 <div className="flex gap-4 text-lg text-[#4B4D4F]">
-                  <FiEdit className="cursor-pointer" />
+                  <Link to={`/doctors/${doctor._id}/update`}>
+                    <FiEdit className="cursor-pointer" />
+                  </Link>
                   <PrimaryModal
                     title="Are you sure you want to delete this doctor?"
                     onConfirm={() => {

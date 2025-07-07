@@ -12,6 +12,7 @@ function App() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/doctors" element={<Doctors />} />
         <Route path="/doctors/add" element={<AddDoctor />} />
+        <Route path="/doctors/:id/update" element={<AddDoctor />} />
       </Routes>
       <ToastContainer />
     </>
