@@ -6,15 +6,18 @@ import { Endpoints } from "../../core/utils/endpoints";
 import Pagination from "../../core/components/Pagination";
 import PrimaryButton from "../../core/components/PrimaryButton";
 import { Link } from "react-router";
-
+import { useRef } from "react";
+import { useInput } from "../../core/hooks/useInput";
 const Doctors = () => {
   const { state, dispatch, refetch } = useQuery(Endpoints.doctors, "GET", {
     page: 1,
   });
 
+  const searchRef = useRef(null);
+  const [result] = useInput(searchRef, refetch);
   const searchHandler = (e) => {
     console.log(e.target.value);
-    refetch({ name: e.target.value });
+    // refetch({ name: e.target.value });
   };
   const dropdownDepartmentSearchHandler = (e) => {
     console.log(e.target.value);
@@ -34,7 +37,7 @@ const Doctors = () => {
     <div className="p-4">
       <header className="flex mb-4 justify-between items-center">
         <div className="flex gap-4">
-          <PrimaryInput onChange={searchHandler} />
+          <PrimaryInput onChange={searchHandler} ref={searchRef} />
           <PrimaryDropDown
             text="Department"
             onSearch={dropdownDepartmentSearchHandler}

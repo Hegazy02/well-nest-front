@@ -5,6 +5,7 @@ const PrimaryInput = ({
   placeholder = "Search",
   type = "text",
   onChange,
+  ref
 }) => {
   return (
     <div className="flex items-center gap-2 py-2 px-4 bg-[#f0f0f0] w-fit rounded-md ">
@@ -18,6 +19,7 @@ const PrimaryInput = ({
         placeholder={placeholder}
         className="decoration-none outline-none"
         onChange={onChange}
+        ref={ref}
       />
     </div>
   );
