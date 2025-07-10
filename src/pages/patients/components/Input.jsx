@@ -19,6 +19,7 @@ export const Input = ({
           </div>
         </label>
         <input
+        
           id={name}
           type="file"
           name={name}
@@ -61,7 +62,7 @@ export const Input = ({
           name={name}
           value={value}
           onChange={handleChange}
-          className="border-2 custom-blue2 rounded-md h-10 w-full"
+          className="border-2 custom-blue1 rounded-md h-10 w-full "
         >
           <option value="">Select...</option>
           {options.map(({ label, value }) => (
@@ -90,7 +91,7 @@ if (type === "submit") {
     <div className="my-5">
       <label className="block mb-1">{inputName}</label>
       <input
-        className="border-2 custom-blue2 rounded-md w-full h-10 px-2"
+        className="border-2 custom-blue1 rounded-md w-full h-10 px-2"
         type={type}
         name={name}
         value={value}

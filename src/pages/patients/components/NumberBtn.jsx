@@ -1,19 +1,29 @@
-import React from 'react'
+import React from "react";
 
-export const NumberBtn = () => {
+export const NumberBtn = ({ step }) => {
+  const steps = [
+    { number: 1, label: "Basic Details" },
+    { number: 2, label: "Emergency Details" },
+    { number: 3, label: "Medical information" },
+  ];
+
+  const getCircleStyle = (currentStep) =>
+    currentStep <= step ? "bg-custom-blue1 text-white" : "bg-stone-300 text-white";
+
   return (
-    <div>
-      <div className='flex justify-around'>
-        <div className='bg-custom-blue1 circle text-white mask-radial-at-center shadow-md'>
-          <p className='p-4 text-lg font-semibold'>1</p>
+    <div className="flex justify-around text-center gap-4">
+      {steps.map(({ number, label }) => (
+        <div key={number} className="flex flex-col items-center">
+          <div
+            className={`${getCircleStyle(
+              number
+            )} w-10 h-10 flex items-center justify-center rounded-full shadow-md`}
+          >
+            <span className="text-lg font-semibold">{number}</span>
+          </div>
+          <span className="mt-2 text-sm font-medium text-gray-700">{label}</span>
         </div>
-         <div className='bg-stone-300 circle text-white mask-radial-at-center shadow-md'>
-          <p className='p-4 text-lg font-semibold'>2</p>
-        </div>
-         <div className='bg-stone-300 circle text-white mask-radial-at-center shadow-md'>
-          <p className='p-4 text-lg font-semibold'>3</p>
-        </div>
-      </div>
+      ))}
     </div>
-  )
-}
+  );
+};
