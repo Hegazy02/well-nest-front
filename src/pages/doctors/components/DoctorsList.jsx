@@ -102,8 +102,8 @@ const DoctorsList = ({ state, refetch, dispatch }) => {
                 </div>
                 <div>{doctor.phone}</div>
                 <div>{doctor.department.title}</div>
-                <div>{10}</div>
-                <div>12</div>
+                <div>{doctor.patientCount}</div>
+                <div>{doctor.todayAppointmentCount}</div>
                 <PrimaryDropDown
                   text={doctor.availability ? "Available" : "Unavailable"}
                   onSelect={(index) => {
