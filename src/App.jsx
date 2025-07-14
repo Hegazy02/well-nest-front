@@ -3,6 +3,7 @@ import "./App.css";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Doctors from "./pages/doctors/Doctors";
 import AddDoctor from "./pages/doctors/AddDoctor";
+import DoctorSchedule from "./pages/DoctorSchedule/DoctorSchedule";
 import { ToastContainer } from "react-toastify";
 import Login from "./pages/auth/Login";
 import ProtectedRoute from "./core/components/ProtectedRoute";
@@ -46,6 +47,11 @@ function App() {
             }
           />
           <Route path="/login" element={<Login />} />
+          <Route path="/doctor-schedule" element={
+            <ProtectedRoute role={"Admin"}>
+              <DoctorSchedule />
+            </ProtectedRoute>} />
+
         </Routes>
         <ToastContainer />
       </AuthProvider>

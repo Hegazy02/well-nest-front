@@ -30,4 +30,8 @@ const ProtectedRoute = ({ children, role }) => {
   return isAuthorized ? children : <Navigate to="/login" replace />;
 };
 
+// const ProtectedRoute = ({ children }) => {
+//   return children;
+// };
+
 export default ProtectedRoute;

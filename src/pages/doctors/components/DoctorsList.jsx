@@ -4,7 +4,7 @@ import { FiEdit } from "react-icons/fi";
 import { AiOutlineDelete } from "react-icons/ai";
 import PrimaryDropDown from "../../../core/components/PrimaryDropDown";
 import { apiClient } from "../../../core/utils/apiClient";
-import PrimaryModal from "../../../core/components/PrimaryModal";
+import PrimaryModal from "../../../core/components/primaryModal";
 import { Endpoints } from "../../../core/utils/endpoints";
 import { toast } from "react-toastify";
 import { Link } from "react-router";
