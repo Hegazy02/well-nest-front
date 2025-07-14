@@ -21,6 +21,8 @@ const LoginPage = () => {
 
     try {
       await login({ email, password });
+      console.log("user", user);
+      
       navigate("/");
     } catch (err) {
       setError(err.message);
