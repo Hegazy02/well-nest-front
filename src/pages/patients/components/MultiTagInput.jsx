@@ -1,41 +1,51 @@
-import React, { useState } from "react";
-import CreatableSelect from "react-select/creatable";
+import React from 'react';
+import { Controller } from 'react-hook-form';
+import CreatableSelect from 'react-select/creatable';
 
-const MultiTagInput = ({ label, defaultOptions = [], onChange }) => {
-  const [options, setOptions] = useState(
-    defaultOptions.map((opt) => ({ value: opt, label: opt }))
-  );
-  const [selected, setSelected] = useState([]);
-
-  const handleChange = (newValue) => {
-    setSelected(newValue);
-    onChange(newValue.map((item) => item.value));
-  };
-
-  const handleCreate = (inputValue) => {
-    const newOption = { value: inputValue, label: inputValue };
-    const updatedOptions = [...options, newOption];
-    setOptions(updatedOptions);
-    const newSelected = [...selected, newOption];
-    setSelected(newSelected);
-    onChange(newSelected.map((item) => item.value));
-  };
-
+const MultiTagInput = ({ control, name, label, options = [] }) => {
+  const selectOptions = options.map(opt => ({ value: opt, label: opt }));
   return (
-    <div className="mb-4">
-      {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          {label}
-        </label>
-      )}
-      <CreatableSelect
-        isMulti
-        options={options}
-        value={selected}
-        onChange={handleChange}
-        onCreateOption={handleCreate}
-        placeholder={`Type or select ${label?.toLowerCase()}...`}
-        classNamePrefix="select"
+    <div>
+      <label className="block text-sm font-medium text-[#233955] mb-2">
+        {label}
+      </label>
+      <Controller
+        name={name}
+        control={control}
+        render={({ field }) => {
+          // react-select expects an array of objects: { value: '...', label: '...' }
+          // We need to convert our array of strings to that format and back.
+          const valueAsObjects = field.value?.map(item => ({ value: item, label: item })) || [];
+
+          const handleChange = (selectedOptions) => {
+            const values = selectedOptions ? selectedOptions.map(option => option.value) : [];
+            field.onChange(values);
+          };
+
+          return (
+                        <CreatableSelect
+              isMulti
+              {...field}
+              options={selectOptions}
+              value={valueAsObjects}
+              onChange={handleChange}
+              placeholder={`Type or select ${label?.toLowerCase()}...`}
+              classNamePrefix="select"
+              styles={{
+                control: (baseStyles, state) => ({
+                  ...baseStyles,
+                  borderRadius: '0.75rem', // rounded-xl
+                  padding: '0.35rem', // custom padding
+                  borderWidth: '2px',
+                  borderColor: state.isFocused ? '#a2f2ee' : '#e5e7eb', // border-gray-200
+                   '&:hover': {
+                      borderColor: '#a2f2ee',
+                    },
+                }),
+              }}
+            />
+          );
+        }}
       />
     </div>
   );

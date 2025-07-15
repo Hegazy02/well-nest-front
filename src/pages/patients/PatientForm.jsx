@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from "react";
 import { Input } from "./components/Input";
 import { NumberBtn } from "./components/NumberBtn";
 import { Textarea } from "./components/Textarea";
 import MultiTagInput from "./components/MultiTagInput";
-import { toast } from "react-toastify";
-import { apiClient } from "../../core/utils/apiClient";
-import { Endpoints } from "../../core/utils/endpoints";
+import { useState } from "react";
+
+// import React, { useEffect, useState } from "react";
+// import { toast } from "react-toastify";
+// import { apiClient } from "../../core/utils/apiClient";
+// import { Endpoints } from "../../core/utils/endpoints";
+// import PrimaryModal from "../../core/components/primaryModal";
+
 export const PatientForm = () => {
   const [step, setStep] = useState(1);
   const [patientData, setPatientData] = useState({
@@ -24,12 +28,10 @@ export const PatientForm = () => {
     patientImage: null,
   });
 
-  const [emergencycontent, setEmergencyContent] = useState({
-    name: "",
-    phone: "",
-    relation: "",
-    notes: "",
-  });
+  const [emergencyContacts, setEmergencyContacts] = useState([
+    { name: "", phone: "", relationship: "" },
+    { name: "", phone: "", relationship: "" },
+  ]);
   const [medicalInfo, setMedicalInfo] = useState({
     BloodType: "",
     BodyHeight: "",
@@ -39,102 +41,115 @@ export const PatientForm = () => {
     hemoglobin: "",
     surgeries: [],
   });
-  const [backendData, setBackendData] = useState({});
+  // const [backendData, setBackendData] = useState({});
   const nextStep = () => setStep((prev) => Math.min(prev + 1, 3));
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
   const handleChangeInput = (e) => {
     const { name, value } = e.target;
+    const numericFields = ["nationalId", "age", "phone", "buildingnumber"];
+
+    if (numericFields.includes(name) && !/^\d*$/.test(value)) {
+      return;
+    }
+
     setPatientData({ ...patientData, [name]: value });
   };
+  const handleChangeEmergencyInput = (e, index) => {
+    const { name, value } = e.target;
+    const numericFields = ["contactname1", "contactname1"];
+    if (numericFields.includes(name) && !/^\d*$/.test(value)) {
+      return;
+    }
+    const updatedContacts = [...emergencyContacts];
+    updatedContacts[index][name] = value;
+    setEmergencyContacts(updatedContacts);
+  };
+
   const handleChangemedicalInfoInput = (e) => {
     const { name, value } = e.target;
     setMedicalInfo({ ...medicalInfo, [name]: value });
-  };
-  const handleChangeEmergencyInput = (e) => {
-    const { name, value } = e.target;
-    setEmergencyContent({ ...emergencycontent, [name]: value });
   };
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Form Data:", patientData);
   };
-  const addPatient = async (data) => {
-    try {
-      await apiClient.post(Endpoints.patients, data);
-      toast("Doctor added successfully", { type: "success" });
+  // const addPatient = async (data) => {
+  //   try {
+  //     await apiClient.post(Endpoints.patients, data);
+  //     toast("Doctor added successfully", { type: "success" });
 
-      // Reset form
-      // reset();
-      // setImagePreview(null);
-    } catch (error) {
-      console.log("error", error);
-      toast(
-        `Error adding patient: ${
-          error.response?.data?.message ?? error.message
-        }`,
-        {
-          type: "error",
-        }
-      );
-    }
-  };
-  const onSubmit = async () => {
-    const data = {};
-    try {
-      const formDataToSend = new FormData();
+  //     // Reset form
+  //     // reset();
+  //     // setImagePreview(null);
+  //   } catch (error) {
+  //     console.log("error", error);
+  //     toast(
+  //       `Error adding patient: ${
+  //         error.response?.data?.message ?? error.message
+  //       }`,
+  //       {
+  //         type: "error",
+  //       }
+  //     );
+  //   }
+  // };
+  // const onSubmit = async () => {
+  //   const data = {};
+  //   try {
+  //     const formDataToSend = new FormData();
 
-      Object.keys(data).forEach((key) => {
-        if (key === "ChronicDiseases") {
-          // Append work experience as individual items with array notation
-          data.workExperience.forEach((experience, index) => {
-            formDataToSend.append(
-              `ChronicDiseases[${index}][position]`,
-              experience.position
-            );
-            formDataToSend.append(
-              `ChronicDiseases[${index}][workPlace]`,
-              experience.workPlace
-            );
-            formDataToSend.append(
-              `ChronicDiseases[${index}][from]`,
-              experience.from
-            );
-            formDataToSend.append(
-              `ChronicDiseases[${index}][to]`,
-              experience.to
-            );
-          });
-        } else if (key === "image") {
-          // Handle image file
-          if (data.image && data.image[0] instanceof File) {
-            formDataToSend.append("image", data.image[0]);
-          } else {
-            formDataToSend.append("image", data.image);
-          }
-        } else if (key != "email") {
-          formDataToSend.append(key, data[key]);
-        }
-      });
+  //     Object.keys(data).forEach((key) => {
+  //       if (key === "ChronicDiseases") {
+  //         // Append work experience as individual items with array notation
+  //         data.workExperience.forEach((experience, index) => {
+  //           formDataToSend.append(
+  //             `ChronicDiseases[${index}][position]`,
+  //             experience.position
+  //           );
+  //           formDataToSend.append(
+  //             `ChronicDiseases[${index}][workPlace]`,
+  //             experience.workPlace
+  //           );
+  //           formDataToSend.append(
+  //             `ChronicDiseases[${index}][from]`,
+  //             experience.from
+  //           );
+  //           formDataToSend.append(
+  //             `ChronicDiseases[${index}][to]`,
+  //             experience.to
+  //           );
+  //         });
+  //       } else if (key === "image") {
+  //         // Handle image file
+  //         if (data.image && data.image[0] instanceof File) {
+  //           formDataToSend.append("image", data.image[0]);
+  //         } else {
+  //           formDataToSend.append("image", data.image);
+  //         }
+  //       } else if (key != "email") {
+  //         formDataToSend.append(key, data[key]);
+  //       }
+  //     });
 
-      await addPatient(formDataToSend);
-    } catch (error) {
-      console.error("Error with doctor:", error);
-    }
-  };
-  useEffect(async () => {
-    const visitTypesresponse = await apiClient.get("visiteType");
+  //     await addPatient(formDataToSend);
+  //   } catch (error) {
+  //     console.error("Error with doctor:", error);
+  //   }
+  // };
+  // useEffect(async () => {
+  //   const visitTypesresponse = await apiClient.get("visiteType");
 
-    console.log("visits", visitTypesresponse.data);
-    let data = {};
-    data.visitTypes = visitTypesresponse.data;
-    
-    const balabal = await apiClient.get("bala");
-    console.log("balabal", balabal.data);
-    data.balabal = balabal.data;
+  //   console.log("visits", visitTypesresponse.data);
+  //   let data = {};
+  //   data.visitTypes = visitTypesresponse.data;
 
-    setBackendData(data);
-  }, []);
+  //   const balabal = await apiClient.get("bala");
+  //   console.log("balabal", balabal.data);
+  //   data.balabal = balabal.data;
+
+  //   setBackendData(data);
+  // }, []);
   return (
     <div className="min-h-screen bg py-10">
       <div className="py-5">
@@ -164,11 +179,11 @@ export const PatientForm = () => {
                 <Input
                   inputName="National ID"
                   name="nationalId"
-                  type="number"
                   value={patientData.nationalId}
                   handleChange={handleChangeInput}
                 />
                 <Input
+                  className="numberValue"
                   inputName="Phone Number"
                   name="phone"
                   value={patientData.phone}
@@ -191,6 +206,7 @@ export const PatientForm = () => {
                   handleChange={handleChangeInput}
                 />
                 <Input
+                  className="numberValue"
                   inputName="Age"
                   name="age"
                   value={patientData.age}
@@ -246,7 +262,7 @@ export const PatientForm = () => {
                 />
                 <Input
                   inputName="Building Number"
-                  name="buildingNumber"
+                  name="buildingnumber"
                   value={patientData.buildingNumber}
                   handleChange={handleChangeInput}
                 />
@@ -261,66 +277,98 @@ export const PatientForm = () => {
           )}
           {/* Step 2 */}
           {step === 2 && (
-            <div className="">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <span>Person 1</span>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Input
-                  inputName="Full Name"
-                  name="name"
-                  value={emergencycontent.name}
-                  handleChange={handleChangeEmergencyInput}
-                />
-                <Input
-                  inputName="Phone Number"
-                  name="phone"
-                  value={emergencycontent.phone}
-                  handleChange={handleChangeEmergencyInput}
-                />
-                <Input
-                  inputName="Relation"
-                  name="relation"
-                  value={emergencycontent.nationalId}
-                  handleChange={handleChangeEmergencyInput}
-                />
-              </div>
-              <div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <span>Person 2 (optional)</span>
+            <div>
+              {emergencyContacts.map((contact, index) => (
+                <div key={index}>
+                  <span>
+                    Person {index + 1}
+                  </span>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <Input
+                      inputName="Full Name"
+                      name="name"
+                      value={contact.name}
+                      handleChange={(e) => handleChangeEmergencyInput(e, index)}
+                    />
+
+                    <Input
+                      inputName="Phone Number"
+                      name="phone"
+                      value={contact.phone}
+                      handleChange={(e) => handleChangeEmergencyInput(e, index)}
+                    />
+  
+                    <Input
+                      inputName="Relation"
+                      name="relation"
+                      value={contact.relation}
+                      handleChange={(e) => handleChangeEmergencyInput(e, index)}
+                    />
+                  </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <Input
-                    inputName="Full Name"
-                    name="name"
-                    value={emergencycontent.name}
-                    handleChange={handleChangeEmergencyInput}
-                  />
-                  <Input
-                    inputName="Phone Number"
-                    name="phone"
-                    value={emergencycontent.phone}
-                    handleChange={handleChangeEmergencyInput}
-                  />
-                  <Input
-                    inputName="Relation"
-                    name="relation"
-                    value={emergencycontent.nationalId}
-                    handleChange={handleChangeEmergencyInput}
-                  />
-                </div>
-              </div>
-              <Textarea
-                id="message"
-                name="message"
-                label="Notes"
-                placeholder="add a note"
-                value={emergencycontent.notes}
-                onChange={handleChangeEmergencyInput}
-                rows={6}
-                required
-              />
+              ))}
             </div>
+            // <div className="">
+            //   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            //     <span>Person 1</span>
+            //   </div>
+            //   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            //     <Input
+            //       inputName="Full Name"
+            //       name="name"
+            //       value={emergencyContacts.name}
+            //       handleChange={handleChangeEmergencyInput}
+            //     />
+            //     <Input
+            //       inputName="Phone Number"
+            //       name="phone"
+            //       value={emergencyContacts.phone}
+            //       handleChange={handleChangeEmergencyInput}
+            //     />
+            //     <Input
+            //       inputName="Relation"
+            //       name="relationship"
+            //       value={emergencyContacts.nationalId}
+            //       handleChange={handleChangeEmergencyInput}
+            //     />
+            //   </div>
+            //   <div>
+            //     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            //       <span>Person 2 (optional)</span>
+            //     </div>
+            //     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            //         <Input
+            //       inputName="Full Name"
+            //       name="name"
+            //       value={emergencyContacts.name}
+            //       handleChange={handleChangeEmergencyInput}
+            //     />
+            //     <Input
+            //       inputName="Phone Number"
+            //       name="phone"
+            //       value={emergencyContacts.phone}
+            //       handleChange={handleChangeEmergencyInput}
+            //     />
+            //     <Input
+            //       inputName="Relation"
+            //       name="relationship"
+            //       value={emergencyContacts.nationalId}
+            //       handleChange={handleChangeEmergencyInput}
+            //     />
+            //     </div>
+            //   </div>
+            //   <Textarea
+            //     id="message"
+            //     name="message"
+            //     label="Notes"
+            //     placeholder="add a note"
+            //     value={emergencyContacts.notes}
+            //     onChange={handleChangeEmergencyInput}
+            //     rows={6}
+            //     required
+            //   />
+            // </div>
           )}
 
           {/* Step 3 */}

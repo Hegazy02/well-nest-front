@@ -2,7 +2,6 @@ import { Routes, Route } from "react-router";
 import "./App.css";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Doctors from "./pages/doctors/Doctors";
-import {PatientForm} from "./pages/patients/PatientForm";
 import AddDoctor from "./pages/doctors/AddDoctor";
 import { ToastContainer } from "react-toastify";
 import Login from "./pages/auth/Login";
@@ -12,6 +11,7 @@ import Patients from "./pages/patients/Patients";
 import PatientDetails from "./pages/patients/PatientDetails";
 import KeywordsInput from "./pages/patients/components/MultiTagInput"
 import './index.css';
+import AddPatient from "./pages/patients/AddPatient";
 function App() {
   return (
     <>
@@ -25,14 +25,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/patients"
-            element={
-              <ProtectedRoute role={"Admin"}>
-                <Patients />
-              </ProtectedRoute>
-            }
-          />
               <Route
             path="/KeywordsInput"
             element={
@@ -42,10 +34,18 @@ function App() {
             }
           />
             <Route
+              path="/patients"
+              element={
+                <ProtectedRoute role={"Admin"}>
+                  <Patients />
+                </ProtectedRoute>
+              }
+            />
+            <Route
             path="/patients/add"
             element={
               <ProtectedRoute role={"Admin"}>
-                <PatientForm />
+                <AddPatient />
               </ProtectedRoute>
             }
           />

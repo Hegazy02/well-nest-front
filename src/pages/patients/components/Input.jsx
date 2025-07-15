@@ -1,102 +1,41 @@
 import React from "react";
-import { FaCamera } from "react-icons/fa";
 
 export const Input = ({
-  inputName,
-  value,
-  handleChange,
+  label,
   name,
+  register,
+  required,
+  error,
   type = "text",
-  options = null,
-  selectedValue = null,
+  validation = {},
+  className = "",
+  ...props
 }) => {
-  if (type === "file") {
-    return (
-      <div className="my-5">
-        <label htmlFor={name} className="cursor-pointer inline-block">
-          <div className="w-20 h-20 bg-custom-blue1 rounded-full flex items-center justify-center shadow-md hover:bg-blue-600 transition">
-            <FaCamera className="text-white text-3xl" />
-          </div>
-        </label>
-        <input
-        
-          id={name}
-          type="file"
-          name={name}
-          accept="image/*"
-          onChange={(event) => {
-            handleChange(event.target.files?.[0]);
-          }}
-          className="hidden"
-        />
-      </div>
-    );
-  }
+  const validationRules = {
+    ...validation,
+    ...(required && { required: `${label} is required` }),
+  };
 
-  if (type === "radio") {
-    return (
-      <div className="my-5">
-        <label className="block mb-1">{inputName}</label>
-        <div className="flex gap-4">
-          {options.map(({ label, value }) => (
-            <label key={value} className="flex items-center gap-1">
-              <input
-                type="radio"
-                name={name}
-                value={value}
-                checked={Number(selectedValue) === Number(value)}
-                onChange={handleChange}
-              />
-              {label}
-            </label>
-          ))}
-        </div>
-      </div>
-    );
-  }
-  if (type === "select") {
-    return (
-      <div className="my-5">
-        <label className="block mb-1">{inputName}</label>
-        <select
-          name={name}
-          value={value}
-          onChange={handleChange}
-          className="border-2 custom-blue1 rounded-md h-10 w-full "
-        >
-          <option value="">Select...</option>
-          {options.map(({ label, value }) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
-      </div>
-    );
-  }
-if (type === "submit") {
   return (
-    <div className="my-5">
+    <div className={`w-full ${className}`}>
+      <label htmlFor={name} className="block text-sm font-medium text-[#233955] mb-2">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
       <input
-        className="bg-custom-blue1 text-white font-semibold rounded-md px-4 py-2 cursor-pointer hover:bg-blue-700 w-272"
-        type="submit"
-        name={name}
-        value={inputName || "Submit"}
-      />
-    </div>
-  );
-}
-  
-  return (
-    <div className="my-5">
-      <label className="block mb-1">{inputName}</label>
-      <input
-        className="border-2 custom-blue1 rounded-md w-full h-10 px-2"
+        id={name}
         type={type}
-        name={name}
-        value={value}
-        onChange={handleChange}
+        {...register(name, validationRules)}
+        onInput={(e) => {
+          // If the field is meant for numbers only (based on the validation pattern),
+          // filter out any non-numeric characters.
+          if (validation.pattern?.value.source.includes('^[0-9]*$')) {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+          }
+        }}
+        className={`w-full px-4 py-3 rounded-xl border-2 ${error ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#a2f2ee] focus:border-[#a2f2ee] transition-colors`}
+        {...props}
       />
+      {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
     </div>
   );
 };
