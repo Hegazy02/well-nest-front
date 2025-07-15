@@ -21,6 +21,8 @@ export const AuthProvider = ({ children }) => {
 
       setUser({ token: response.data._id, role: response.data.role });
       localStorage.setItem("token", response.data.token);
+      
+      apiClient.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
     } catch (error) {
       console.log("error", error);
     }
@@ -29,19 +31,14 @@ export const AuthProvider = ({ children }) => {
     try {
       setIsLoading(true);
       const token = localStorage.getItem("token");
-      console.log("token", token);
 
       if (!token) {
         setIsLoading(false);
         return;
       }
-      const response = await apiClient.get(Endpoints.me, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log("id", response.data.data._id);
-      console.log("role", response.data.data.role);
+      apiClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+      const response = await apiClient.get(Endpoints.me);
 
       setUser({ _id: response.data.data._id, role: response.data.data.role });
     } catch (error) {
