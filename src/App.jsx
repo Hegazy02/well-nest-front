@@ -7,7 +7,11 @@ import { ToastContainer } from "react-toastify";
 import Login from "./pages/auth/Login";
 import ProtectedRoute from "./core/components/ProtectedRoute";
 import { AuthProvider } from "./core/context/AuthContext";
-
+import Patients from "./pages/patients/Patients";
+import PatientDetails from "./pages/patients/PatientDetails";
+import KeywordsInput from "./pages/patients/components/MultiTagInput"
+import './index.css';
+import AddPatient from "./pages/patients/AddPatient";
 function App() {
   return (
     <>
@@ -18,6 +22,38 @@ function App() {
             element={
               <ProtectedRoute role={"Admin"}>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+              <Route
+            path="/KeywordsInput"
+            element={
+              <ProtectedRoute role={"Admin"}>
+                <KeywordsInput />
+              </ProtectedRoute>
+            }
+          />
+            <Route
+              path="/patients"
+              element={
+                <ProtectedRoute role={"Admin"}>
+                  <Patients />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+            path="/patients/add"
+            element={
+              <ProtectedRoute role={"Admin"}>
+                <AddPatient />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/patients/:id"
+            element={
+              <ProtectedRoute role={"Admin"}>
+                <PatientDetails />
               </ProtectedRoute>
             }
           />
