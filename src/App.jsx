@@ -3,6 +3,8 @@ import "./App.css";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Doctors from "./pages/doctors/Doctors";
 import AddDoctor from "./pages/doctors/AddDoctor";
+import Appointments from "./pages/appointments/Appointments";
+import AddAppointment from "./pages/appointments/AddAppointment";
 import { ToastContainer } from "react-toastify";
 import Login from "./pages/auth/Login";
 import ProtectedRoute from "./core/components/ProtectedRoute";
@@ -45,6 +47,12 @@ function App() {
               </ProtectedRoute>
             }
           />
+          
+          {/* ✅ أضفنا الراوت ده بدون حماية علشان تجربى شغلك */}
+          <Route path="/appointments" element={<Appointments />} />
+          
+<Route path="/appointments/add" element={<AddAppointment />} />
+
           <Route path="/login" element={<Login />} />
         </Routes>
         <ToastContainer />
@@ -54,3 +62,4 @@ function App() {
 }
 
 export default App;
+

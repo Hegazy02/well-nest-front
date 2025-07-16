@@ -4,6 +4,7 @@ export class Endpoints {
   static baseUrl = Endpoints.devUrl;
   static doctors = `doctors`;
   static departments = `departments`;
+  static appointments = `appointments`;
   static login = `auth/login`;
   static me = `auth/me`;
 }
