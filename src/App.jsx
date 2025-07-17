@@ -12,112 +12,118 @@ import DepartmentDetails from "./pages/departments/DepartmentDetails";
 import DepartmentForm from "./pages/departments/DepartmentForm";
 import Patients from "./pages/patients/Patients";
 import PatientDetails from "./pages/patients/PatientDetails";
-import KeywordsInput from "./pages/patients/components/MultiTagInput"
-import './index.css';
+import KeywordsInput from "./pages/patients/components/MultiTagInput";
+import "./index.css";
 import AddPatient from "./pages/patients/AddPatient";
+import Sidebar from "./core/components/layout/Sidebar";
 function App() {
   return (
     <>
       <AuthProvider>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute role={"Admin"}>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/login" element={<Login />} />
-              <Route
+        <div className="flex">
+          <Sidebar />
+          <div className="flex-grow">
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              {/* <Route
             path="/KeywordsInput"
             element={
               <ProtectedRoute role={"Admin"}>
                 <KeywordsInput />
               </ProtectedRoute>
             }
-          />
-            <Route
-              path="/patients"
-              element={
-                <ProtectedRoute role={"Admin"}>
-                  <Patients />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-            path="/patients/add"
-            element={
-              <ProtectedRoute role={"Admin"}>
-                <AddPatient />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/patients/:id"
-            element={
-              <ProtectedRoute role={"Admin"}>
-                <PatientDetails />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/doctors"
-            element={
-              <ProtectedRoute role={"Admin"}>
-                <Doctors />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/doctors/add"
-            element={
-              <ProtectedRoute role={"Admin"}>
-                <AddDoctor />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/doctors/:id/update"
-            element={
-              <ProtectedRoute role={"Admin"}>
-                <AddDoctor />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/departments"
-            element={
-              <ProtectedRoute role={"Admin"}>
-                <Departments />
-              </ProtectedRoute>
-            }
-          />{" "}
-          <Route
-            path="/departments/add"
-            element={
-              <ProtectedRoute role={"Admin"}>
-                <DepartmentForm />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/departments/:id"
-            element={
-              <ProtectedRoute role={"Admin"}>
-                <DepartmentDetails />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/departments/:id/update"
-            element={
-              <ProtectedRoute role={"Admin"}>
-                <DepartmentForm />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+          /> */}
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute role={"Admin"}>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/patients"
+                element={
+                  <ProtectedRoute role={"Admin"}>
+                    <Patients />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/patients/add"
+                element={
+                  <ProtectedRoute role={"Admin"}>
+                    <AddPatient />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/patients/:id"
+                element={
+                  <ProtectedRoute role={"Admin"}>
+                    <PatientDetails />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/doctors"
+                element={
+                  <ProtectedRoute role={"Admin"}>
+                    <Doctors />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/doctors/add"
+                element={
+                  <ProtectedRoute role={"Admin"}>
+                    <AddDoctor />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/doctors/:id/update"
+                element={
+                  <ProtectedRoute role={"Admin"}>
+                    <AddDoctor />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/departments"
+                element={
+                  <ProtectedRoute role={"Admin"}>
+                    <Departments />
+                  </ProtectedRoute>
+                }
+              />{" "}
+              <Route
+                path="/departments/add"
+                element={
+                  <ProtectedRoute role={"Admin"}>
+                    <DepartmentForm />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/departments/:id"
+                element={
+                  <ProtectedRoute role={"Admin"}>
+                    <DepartmentDetails />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/departments/:id/update"
+                element={
+                  <ProtectedRoute role={"Admin"}>
+                    <DepartmentForm />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </div>
+        </div>
         <ToastContainer />
       </AuthProvider>
     </>

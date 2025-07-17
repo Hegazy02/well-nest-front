@@ -26,8 +26,6 @@ const AddPatient = () => {
       case "new": return "New Visit";
       case "checkUp": return "Check-Up";
       case "emergency": return "Emergency";
-      case "consultation": return "Consultation";
-      case "deceased": return "Deceased";
       default: return type;
     }
   };
@@ -55,6 +53,7 @@ const AddPatient = () => {
         street: "",
         buildingNumber: "",
         floor: "",
+        apartment:"",
         note: "",
       },
       emergencyContacts: [{ contactName: "", contactPhone: "", relation: "" }],
@@ -109,10 +108,7 @@ const AddPatient = () => {
     const imageValue = getValues("image");
     if (typeof imageValue === "string") {
       setImagePreview(imageValue);
-      return;
-    }
-
-    if (watchedImage && watchedImage[0] instanceof File) {
+    } else if (watchedImage && watchedImage[0] instanceof File) {
       const file = watchedImage[0];
       const reader = new FileReader();
       reader.onloadend = () => setImagePreview(reader.result);
@@ -141,6 +137,7 @@ const AddPatient = () => {
               street: "",
               buildingNumber: "",
               floor: "",
+              apartment:"",
               note: "",
             },
             emergencyContacts: d.emergencyContacts.length ? d.emergencyContacts : [{ contactName: "", contactPhone: "", relation: "" }],
@@ -162,48 +159,57 @@ const AddPatient = () => {
     }
   }, [id, reset]);
 
-const onSubmit = async (data) => {
-  try {
+  const preparePatientFormData = (data) => {
     const formData = new FormData();
 
-    formData.append("fullName", data.fullName);
-    formData.append("nationalId", data.nationalId || "");
-    formData.append("phone", data.phone);
-    formData.append("email", data.email);
-    formData.append("dateOfBirth", data.dateOfBirth);
-    formData.append("gender", data.gender); // "0" or "1" already from select
-    formData.append("maritalStatus", data.maritalStatus);
-    formData.append("visitType", data.visitType);
+    const appendOrEmpty = (key, value) => {
+      formData.append(key, value ?? "");
+    };
 
-    // Stringify nested objects/arrays
+    appendOrEmpty("fullName", data.fullName);
+    appendOrEmpty("nationalId", data.nationalId);
+    appendOrEmpty("phone", data.phone);
+    appendOrEmpty("email", data.email);
+    appendOrEmpty("dateOfBirth", data.dateOfBirth);
+    appendOrEmpty("gender", data.gender);
+    appendOrEmpty("maritalStatus", data.maritalStatus);
+    appendOrEmpty("visitType", data.visitType);
+
     formData.append("address", JSON.stringify(data.address));
     formData.append("emergencyContacts", JSON.stringify(data.emergencyContacts));
     formData.append("medicalInfo", JSON.stringify(data.medicalInfo));
 
-    // Handle image upload
     if (data.image && data.image.length > 0 && data.image[0] instanceof File) {
       formData.append("image", data.image[0]);
     }
 
-    const url = id
-      ? `http://localhost:3000/patients/${id}`
-      : `http://localhost:3000/patients/add`;
+    return formData;
+  };
 
-    const method = id ? "patch" : "post";
+  const onSubmit = async (data) => {
+    try {
+      const formData = preparePatientFormData(data);
 
-    await apiClient[method](url, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+      const url = id
+        ? `http://localhost:3000/patients/${id}`
+        : `http://localhost:3000/patients/add`;
 
-    toast.success(id ? "Patient updated successfully" : "Patient added successfully");
+      const method = id ? "patch" : "post";
 
-    if (!id) reset();
+      await apiClient[method](url, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log([...formData.entries()]);
 
-  } catch (error) {
-    const msg = error.response?.data?.message || error.message;
-    toast.error(`Error: ${msg}`);
-  }
-};
+      toast.success(id ? "Patient updated successfully" : "Patient added successfully");
+
+      if (!id) reset();
+
+    } catch (error) {
+      const msg = error.response?.data?.message || error.message;
+      toast.error(`Error: ${msg}`);
+    }
+  };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
@@ -248,6 +254,7 @@ const onSubmit = async (data) => {
               <Input label="Street" name="address.street" register={register} error={errors.address?.street} />
               <Input label="Building Number" name="address.buildingNumber" register={register} error={errors.address?.buildingNumber} />
               <Input label="Floor" name="address.floor" register={register} error={errors.address?.floor} />
+              <Input label="Apartment No" name="address.apartment" register={register} error={errors.address?.apartment} />
               <Input label="Note" name="address.note" register={register} error={errors.address?.note} />
             </div>
           </div>

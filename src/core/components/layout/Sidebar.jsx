@@ -30,7 +30,7 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <div
-        className={`fixed md:static top-0 left-0 h-screen w-65 z-50 transform transition-transform  
+        className={`fixed md:static top-0 left-0  w-65 z-50 transform transition-transform  
         ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0 md:flex md:flex-col`}
@@ -62,7 +62,7 @@ const Sidebar = () => {
 
               <li>
                 <NavLink
-                  to="/doctor"
+                  to="/doctors"
                   className={({ isActive }) =>
                     `flex items-center px-2 py-2 rounded-full transition ${
                       isActive
@@ -113,7 +113,7 @@ const Sidebar = () => {
 
               <li>
                 <NavLink
-                  to="/department"
+                  to="/departments"
                   className={({ isActive }) =>
                     `flex items-center px-2 py-2 rounded-full transition ${
                       isActive
