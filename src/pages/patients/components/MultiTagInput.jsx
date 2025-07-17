@@ -40,6 +40,7 @@ const MultiTagInput = ({ control, name, label, options = [] }) => {
                   borderColor: state.isFocused ? '#e5e7eb' : '#e5e7eb', // border-gray-200
                    '&:hover': {
                       borderColor: '#e5e7eb',
+
                     },
                 }),
               }}

@@ -26,11 +26,13 @@ export const Input = ({
         type={type}
         {...register(name, validationRules)}
         onInput={(e) => {
+
           if (validation.pattern?.value.source.includes('^[0-9]*$')) {
             e.target.value = e.target.value.replace(/[^0-9]/g, '');
           }
         }}
         className={`w-full px-4 py-3 rounded-xl border-2 ${error ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-1 focus:ring-gray-200 focus:border-gray-200 transition-colors`}
+
         {...props}
       />
       {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}

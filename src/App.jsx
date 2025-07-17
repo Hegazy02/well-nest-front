@@ -7,6 +7,9 @@ import { ToastContainer } from "react-toastify";
 import Login from "./pages/auth/Login";
 import ProtectedRoute from "./core/components/ProtectedRoute";
 import { AuthProvider } from "./core/context/AuthContext";
+import Departments from "./pages/departments/Departments";
+import DepartmentDetails from "./pages/departments/DepartmentDetails";
+import DepartmentForm from "./pages/departments/DepartmentForm";
 import Patients from "./pages/patients/Patients";
 import PatientDetails from "./pages/patients/PatientDetails";
 import KeywordsInput from "./pages/patients/components/MultiTagInput"
@@ -25,6 +28,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/login" element={<Login />} />
               <Route
             path="/KeywordsInput"
             element={
@@ -81,7 +85,38 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/login" element={<Login />} />
+          <Route
+            path="/departments"
+            element={
+              <ProtectedRoute role={"Admin"}>
+                <Departments />
+              </ProtectedRoute>
+            }
+          />{" "}
+          <Route
+            path="/departments/add"
+            element={
+              <ProtectedRoute role={"Admin"}>
+                <DepartmentForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/departments/:id"
+            element={
+              <ProtectedRoute role={"Admin"}>
+                <DepartmentDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/departments/:id/update"
+            element={
+              <ProtectedRoute role={"Admin"}>
+                <DepartmentForm />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
         <ToastContainer />
       </AuthProvider>
