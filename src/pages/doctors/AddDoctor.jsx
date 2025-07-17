@@ -22,7 +22,6 @@ import { useParams } from "react-router";
 
 const AddDoctor = () => {
   const { id } = useParams(); // doctorId will be "aosdg5sdg4g88r"
-
   const [departments, setDepartments] = useState([]);
   const [imagePreview, setImagePreview] = useState(null);
 

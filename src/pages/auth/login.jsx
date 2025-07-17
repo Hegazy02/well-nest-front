@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { apiClient } from "../../core/utils/apiClient";
 import { useNavigate } from "react-router";
 import { Endpoints } from "../../core/utils/endpoints";
 import { useAuth } from "../../core/context/AuthContext";
@@ -12,7 +11,7 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { user, login } = useAuth();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
