@@ -15,7 +15,7 @@ const PrimarySelect = ({ control, name, label, options, error, required }) => {
           <select
             {...field}
             id={name}
-            className={`w-full px-4 py-3 rounded-xl border-2 ${error ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#a2f2ee] focus:border-[#a2f2ee] transition-colors bg-white`}
+            className={`w-full px-4 py-3 rounded-xl border-2 ${error ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-gray-100 focus:border-gray-100 transition-colors bg-white`}
           >
             <option value="">Select {label}</option>
             {options.map((option) => (
