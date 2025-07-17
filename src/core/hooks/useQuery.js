@@ -2,6 +2,7 @@ import { useEffect, useReducer } from "react";
 import { queryReducer } from "../reducers/queryReducer";
 import { apiClient } from "../utils/apiClient";
 import { useCallback } from "react";
+import { useMemo } from "react";
 
 const initialState = {
   data: {},
@@ -16,9 +17,13 @@ export function useQuery(
   body = null
 ) {
   const [state, dispatch] = useReducer(queryReducer, initialState);
+  const memoizedParams = useMemo(
+    () => initialParams,
+    [JSON.stringify(initialParams)]
+  );
 
   const fetchData = useCallback(
-    async (params = initialParams) => {
+    async (params = memoizedParams) => {
       dispatch({ type: "REQUEST_START" });
 
       try {
@@ -26,6 +31,8 @@ export function useQuery(
         switch (method) {
           case "GET":
             result = await apiClient.get(endPoint, { params });
+            console.log("result", result.data.data);
+
             break;
           case "POST":
             result = await apiClient.post(endPoint, body, params);
@@ -54,7 +61,7 @@ export function useQuery(
         });
       }
     },
-    [endPoint, method, JSON.stringify(initialParams), JSON.stringify(body)]
+    [endPoint, method, memoizedParams, JSON.stringify(body)]
   );
 
   useEffect(() => {
@@ -62,7 +69,7 @@ export function useQuery(
   }, [fetchData]);
 
   const refetch = useCallback(
-    (newParams = initialParams) => {
+    (newParams = memoizedParams) => {
       fetchData(newParams);
     },
     [fetchData]
