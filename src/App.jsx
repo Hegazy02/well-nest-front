@@ -10,7 +10,6 @@ import { AuthProvider } from "./core/context/AuthContext";
 import Departments from "./pages/departments/Departments";
 import DepartmentDetails from "./pages/departments/DepartmentDetails";
 import DepartmentForm from "./pages/departments/DepartmentForm";
-
 import Patients from "./pages/patients/Patients";
 import PatientDetails from "./pages/patients/PatientDetails";
 import KeywordsInput from "./pages/patients/components/MultiTagInput"

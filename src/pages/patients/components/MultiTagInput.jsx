@@ -37,9 +37,10 @@ const MultiTagInput = ({ control, name, label, options = [] }) => {
                   borderRadius: '0.75rem', // rounded-xl
                   padding: '0.35rem', // custom padding
                   borderWidth: '2px',
-                  borderColor: state.isFocused ? '#a2f2ee' : '#e5e7eb', // border-gray-200
+                  borderColor: state.isFocused ? '#e5e7eb' : '#e5e7eb', // border-gray-200
                    '&:hover': {
-                      borderColor: '#a2f2ee',
+                      borderColor: '#e5e7eb',
+
                     },
                 }),
               }}
