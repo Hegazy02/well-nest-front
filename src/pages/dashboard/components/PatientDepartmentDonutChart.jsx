@@ -20,7 +20,7 @@ function getDateRange(days) {
   };
 }
 
-const PatientDepartmentDonutChart = () => {
+const PatientDepartmentDonutChart = ({ className }) => {
   const [range, setRange] = useState(ranges[0]);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -43,14 +43,14 @@ const PatientDepartmentDonutChart = () => {
 
   const chartData = data?.departmentsPercentage || [];
   const total = data?.totalAppointment || 0;
-  console.log("chartData", chartData);
-  console.log("total", total);
 
   return (
-    <div className="bg-white rounded-2xl p-6 border border-[#eee] w-full max-w-xs">
+    <div
+      className={`bg-white rounded-2xl p-6 border border-[#eee] ${className} `}
+    >
       <div className="flex items-center justify-between mb-2">
         <div>
-          <div className="font-bold text-xl">Patient Overview</div>
+          <div className="font-bold text-xl">Today's Appointments Overview</div>
           <div className="text-gray-400 text-sm">by Departments</div>
         </div>
       </div>

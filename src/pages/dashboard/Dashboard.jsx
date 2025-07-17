@@ -2,17 +2,17 @@ import React from "react";
 import AppointmentCardList from "./components/AppointmentCardList";
 import PatientOverviewChart from "./components/PatientOverviewChart";
 import PatientDepartmentDonutChart from "./components/PatientDepartmentDonutChart";
+import DoctorsScheduleList from "./components/DoctorsScheduleList";
 
 const Dashboard = () => {
   return (
-    <div>
-      <div className="text-3xl text-blue-400">Dashboard</div>
+    <div className="flex flex-col gap-4">
       <AppointmentCardList />
-      <div className="mt-8">
-        <PatientOverviewChart />
-      </div>
-      <div className="mt-8">
-        <PatientDepartmentDonutChart />
+      <PatientOverviewChart />
+
+      <div className="flex gap-4">
+        <PatientDepartmentDonutChart className="flex-grow"/>
+        <DoctorsScheduleList  className="flex-grow"/>
       </div>
     </div>
   );
