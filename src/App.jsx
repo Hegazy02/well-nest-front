@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router";
+import { Routes, Route, useLocation } from "react-router";
 import "./App.css";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Doctors from "./pages/doctors/Doctors";
@@ -12,27 +12,22 @@ import DepartmentDetails from "./pages/departments/DepartmentDetails";
 import DepartmentForm from "./pages/departments/DepartmentForm";
 import Patients from "./pages/patients/Patients";
 import PatientDetails from "./pages/patients/PatientDetails";
-import KeywordsInput from "./pages/patients/components/MultiTagInput";
 import "./index.css";
 import AddPatient from "./pages/patients/AddPatient";
 import Sidebar from "./core/components/layout/Sidebar";
+
 function App() {
+  const location = useLocation();
+  const hideSidebarPaths = ["/login"];
+  const shouldHideSidebar = hideSidebarPaths.includes(location.pathname);
   return (
     <>
       <AuthProvider>
         <div className="flex">
-          <Sidebar />
+          {!shouldHideSidebar && <Sidebar />}
           <div className="flex-grow">
             <Routes>
               <Route path="/login" element={<Login />} />
-              {/* <Route
-            path="/KeywordsInput"
-            element={
-              <ProtectedRoute role={"Admin"}>
-                <KeywordsInput />
-              </ProtectedRoute>
-            }
-          /> */}
               <Route
                 path="/"
                 element={
