@@ -89,6 +89,8 @@ const AddDoctor = () => {
             to: formatDateForInput(exp.to),
           })
         );
+        console.log("deep", response.data.data.department);
+
         const data = {
           name: response.data.data.name,
           appointmentDuration: response.data.data.appointmentDuration,
@@ -208,8 +210,12 @@ const AddDoctor = () => {
           } else {
             formDataToSend.append("image", data.image);
           }
-        } else if (key != "email") {
-          formDataToSend.append(key, data[key]);
+        } else {
+          if (id && key != "email") {
+            formDataToSend.append(key, data[key]);
+          } else if (!id) {
+            formDataToSend.append(key, data[key]);
+          }
         }
       });
 
