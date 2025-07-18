@@ -8,6 +8,7 @@ import { AiOutlineDelete } from "react-icons/ai";
 import PrimaryModal from "../../core/components/PrimaryModal";
 import { toast } from "react-toastify";
 import { apiClient } from "../../core/utils/apiClient";
+import Loader from "../../core/components/Loader";
 
 const DepartmentDetails = () => {
   const { id } = useParams();
@@ -39,11 +40,13 @@ const DepartmentDetails = () => {
   };
   return (
     <>
-      {isLoading && <p>Loading...</p>}
+      {isLoading && <Loader />}
       {!isLoading && (
         <>
           <div className="flex justify-between items-center ">
-            <h1 className="text-2xl font-semibold  mb-2 mt-4">Department Details</h1>
+            <h1 className="text-2xl font-semibold  mb-2 mt-4">
+              Department Details
+            </h1>
             <PrimaryModal
               title="Are you sure you want to delete this department?"
               onConfirm={deleteDepartment}
@@ -74,7 +77,7 @@ const DepartmentDetails = () => {
           <p className="mb-4">{state?.data?.data?.about}</p>
           <h2 className="text-lg font-semibold text-gray-400 mb-4">Our Team</h2>
           <div className="grid lg:grid-cols-6 md:grid-cols-4 sm:grid-cols-2 gap-4">
-            {isLoadingDoctors && <p>Loading...</p>}
+            {isLoadingDoctors && <Loader />}
             {!isLoadingDoctors &&
               doctorsState?.data?.data?.map((doctor) => (
                 <div
