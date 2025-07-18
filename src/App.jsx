@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from "react-router";
+import { Routes, Route, useLocation, useMatches } from "react-router";
 import "./App.css";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Doctors from "./pages/doctors/Doctors";
@@ -19,17 +19,28 @@ import Sidebar from "./core/components/layout/Sidebar";
 import DoctorDetails from "./pages/doctors/Doctor-details/DoctorDetails";
 
 
+import Header from "./core/components/layout/Header";
+import { useState } from "react";
+import 'react-loading-skeleton/dist/skeleton.css';
 
 function App() {
   const location = useLocation();
   const hideSidebarPaths = ["/login"];
   const shouldHideSidebar = hideSidebarPaths.includes(location.pathname);
+  const [title, setTitle] = useState("Dashboard");
+  const isNested = location.pathname.split("/").length > 2;
+  console.log("isNested", isNested);
+
   return (
     <>
       <AuthProvider>
-        <div className="flex">
-          {!shouldHideSidebar && <Sidebar />}
-          <div className="flex-grow">
+        <div className="flex gap-4">
+          {!shouldHideSidebar  && (
+            <Sidebar onClick={(value) => setTitle(value)} />
+          )}
+          <div className="flex-grow mr-4 relative">
+            {!shouldHideSidebar && !isNested && <Header title={title} />}
+
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route
@@ -50,6 +61,14 @@ function App() {
               />
               <Route
                 path="/patients/add"
+                element={
+                  <ProtectedRoute role={"Admin"}>
+                    <AddPatient />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/patients/:id/update"
                 element={
                   <ProtectedRoute role={"Admin"}>
                     <AddPatient />

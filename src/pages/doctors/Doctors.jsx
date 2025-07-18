@@ -19,40 +19,56 @@ const Doctors = () => {
       page: 1,
     }
   );
-  const [selectedDepartment, setSelectedDepartment] = useState("Department");
+  const [selectedDepartment, setSelectedDepartment] = useState({
+    title: "Department",
+    _id: null,
+  });
+  const [avaliability, setAvailability] = useState("Availability");
   const searchRef = useRef(null);
   const [result] = useInput(searchRef, refetch);
-  const searchHandler = (e) => {
-    // refetch({ name: e.target.value });
-  };
+
   const dropdownDepartmentSearchHandler = (e) => {
     refetchDepartments({ page: 1, title: e.target.value });
   };
   const selectDepartmentHandler = (index) => {
-    // refetch({ department: index });
     setSelectedDepartment(
-      index == 0 ? "None" : departmentsState.data?.data[index - 1]?.title
+      index == 0
+        ? { title: "Department", _id: null }
+        : departmentsState.data?.data[index - 1]
     );
     refetch({
       page: 1,
       departmentId:
         index == 0 ? null : departmentsState.data?.data[index - 1]?._id,
+      availability:
+        avaliability == "Availability"
+          ? null
+          : avaliability == "Available"
+          ? true
+          : false,
     });
   };
   const selectAvailabilityHandler = (index) => {
-    refetch({ availability: index == 1 ? true : index == 2 ? false : null });
+    setAvailability(
+      index == 0 ? "Availability" : index == 1 ? "Available" : "Unavailable"
+    );
+    refetch({
+      availability: index == 1 ? true : index == 2 ? false : null,
+      page: 1,
+      departmentId: selectedDepartment._id,
+    });
   };
   const pageChangeHandler = ({ selected: index }) => {
     refetch({ page: index + 1 });
   };
 
   return (
-    <div className="p-4">
+    <div className="">
       <header className="flex mb-4 justify-between items-center">
         <div className="flex gap-4">
-          <PrimaryInput onChange={searchHandler} ref={searchRef} />
+          <PrimaryInput ref={searchRef} />
           <PrimaryDropDown
-            text={selectedDepartment}
+            text={selectedDepartment.title}
             onSearch={dropdownDepartmentSearchHandler}
             onSelect={selectDepartmentHandler}
           >
@@ -62,7 +78,7 @@ const Doctors = () => {
             ))}
           </PrimaryDropDown>
           <PrimaryDropDown
-            text="Availability"
+            text={avaliability}
             onSelect={selectAvailabilityHandler}
           >
             <p>All</p>
@@ -73,9 +89,6 @@ const Doctors = () => {
         <Link to="/doctors/add">
           <PrimaryButton>Add Doctor</PrimaryButton>
         </Link>
-        {/* <Drawer buttonText="Add Doctor" title="Add">
-          <AddDoctor />
-        </Drawer> */}
       </header>
       <DoctorsList state={state} refetch={refetch} dispatch={dispatch} />
       <Pagination
