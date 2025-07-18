@@ -31,7 +31,7 @@ export function useQuery(
         switch (method) {
           case "GET":
             result = await apiClient.get(endPoint, { params });
-            console.log("result", result.data.data);
+            // console.log("result", result.data.data);
 
             break;
           case "POST":

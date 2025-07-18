@@ -1,5 +1,3 @@
-
-
 import { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { Input } from "./components/Input";
@@ -8,11 +6,11 @@ import PrimarySelect from "../../core/components/PrimarySelect";
 import MultiTagInput from "./components/MultiTagInput";
 import { toast } from "react-toastify";
 import { apiClient } from "../../core/utils/apiClient";
-import { useParams } from "react-router";
-import axios from "axios";
+import { useNavigate, useParams } from "react-router";
 import PrimaryButton from "../../core/components/PrimaryButton";
 import { TbXboxX } from "react-icons/tb";
 import { MdDeleteOutline } from "react-icons/md";
+import { Endpoints } from "../../core/utils/endpoints";
 
 const AddPatient = () => {
   const { id } = useParams();
@@ -20,13 +18,18 @@ const AddPatient = () => {
   const [visitTypes, setVisitTypes] = useState([]);
   const [allergies, setAllergies] = useState([]);
   const [chronicDiseases, setChronicDiseases] = useState([]);
+  const navigate = useNavigate();
 
   const formatLabel = (type) => {
     switch (type) {
-      case "new": return "New Visit";
-      case "checkUp": return "Check-Up";
-      case "emergency": return "Emergency";
-      default: return type;
+      case "new":
+        return "New Visit";
+      case "checkUp":
+        return "Check-Up";
+      case "emergency":
+        return "Emergency";
+      default:
+        return type;
     }
   };
 
@@ -53,7 +56,7 @@ const AddPatient = () => {
         street: "",
         buildingNumber: "",
         floor: "",
-        apartment:"",
+        apartment: "",
         note: "",
       },
       emergencyContacts: [{ contactName: "", contactPhone: "", relation: "" }],
@@ -68,41 +71,25 @@ const AddPatient = () => {
     },
   });
 
-  const { fields: contactFields, append: appendContact, remove: removeContact } = useFieldArray({
+  const {
+    fields: contactFields,
+    append: appendContact,
+    remove: removeContact,
+  } = useFieldArray({
     control,
     name: "emergencyContacts",
   });
 
-  const { fields: surgeryFields, append: appendSurgery, remove: removeSurgery } = useFieldArray({
+  const {
+    fields: surgeryFields,
+    append: appendSurgery,
+    remove: removeSurgery,
+  } = useFieldArray({
     control,
     name: "medicalInfo.surgeries",
   });
 
   const watchedImage = watch("image");
-
-  useEffect(() => {
-    axios.get("http://localhost:3000/patients/visit-type")
-      .then((res) => {
-        const options = res.data.data.map((type) => ({
-          value: type,
-          label: formatLabel(type),
-        }));
-        setVisitTypes(options);
-      })
-      .catch(console.error);
-  }, []);
-
-  useEffect(() => {
-    Promise.all([
-      axios.get("http://localhost:3000/patients/medical-info/allergies"),
-      axios.get("http://localhost:3000/patients/medical-info/chronicDiseases"),
-    ])
-      .then(([allergiesRes, chronicRes]) => {
-        setAllergies(allergiesRes.data.data);
-        setChronicDiseases(chronicRes.data.data);
-      })
-      .catch(console.error);
-  }, []);
 
   useEffect(() => {
     const imageValue = getValues("image");
@@ -119,43 +106,58 @@ const AddPatient = () => {
   }, [watchedImage, getValues]);
 
   useEffect(() => {
-    if (id) {
-      apiClient.get(`/patients/${id}`)
-        .then((res) => {
-          const d = res.data.data;
-          reset({
-            fullName: d.fullName,
-            nationalId: d.nationalId,
-            phone: d.phone,
-            email: d.email,
-            dateOfBirth: d.dateOfBirth?.split("T")[0] || "",
-            gender: d.gender === 0 ? "male" : "female",
-            maritalStatus: d.maritalStatus,
-            visitType: d.status?.status || "checkUp",
-            image: d.patientImage || null,
-            address: d.address || {
-              street: "",
-              buildingNumber: "",
-              floor: "",
-              apartment:"",
-              note: "",
-            },
-            emergencyContacts: d.emergencyContacts.length ? d.emergencyContacts : [{ contactName: "", contactPhone: "", relation: "" }],
-            medicalInfo: {
-              bloodType: d.medicalInfo?.bloodType || "",
-              bodyHeight: d.medicalInfo?.bodyHeight || "",
-              bodyWeight: d.medicalInfo?.bodyWeight || "",
-              chronicDiseases: d.medicalInfo?.chronicDiseases || [],
-              allergies: d.medicalInfo?.allergies || [],
-              surgeries: d.medicalInfo?.surgeries || [],
-            },
-          });
+    const fetchData = async () => {
+      try {
+        const visitTypeRes = await apiClient.get("/patients/visit-type");
+        const allergiesRes = await apiClient.get(
+          "/patients/medical-info/allergies"
+        );
+        const chronicRes = await apiClient.get(
+          "/patients/medical-info/chronicDiseases"
+        );
+        const options = visitTypeRes.data.data.map((type) => ({
+          value: type,
+          label: formatLabel(type),
+        }));
+        setVisitTypes(options);
+        setAllergies(allergiesRes.data.data);
+        setChronicDiseases(chronicRes.data.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchData();
 
-          if (d.patientImage) {
-            setImagePreview(d.patientImage);
-          }
-        })
-        .catch(console.error);
+    const fetchPatientData = async (id) => {
+      try {
+        const res = await apiClient.get(`${Endpoints.patients}/${id}`);
+        const d = res.data.data;
+        const patientFormData = {
+          serialNumber: d.serialNumber || "",
+          createdAt: d.createdAt || "",
+          fullName: d.fullName || "",
+          nationalId: d.nationalId || "",
+          phone: d.phone || "",
+          email: d.email || "",
+          dateOfBirth: d.dateOfBirth ? d.dateOfBirth.split("T")[0] : "",
+          gender: d.gender !== undefined ? String(d.gender) : "",
+          maritalStatus: d.maritalStatus || "",
+          visitType: d.visitTypeId?.visitType || "checkUp",
+          image: d.image || null,
+          address: d.AddressId,
+          emergencyContacts: d.EmergencyContactIds,
+          medicalInfo: d.medicalInfoId,
+        };
+        reset(patientFormData);
+        if (d.patientImage) {
+          setImagePreview(d.patientImage);
+        }
+      } catch (err) {
+        console.error("Error fetching patient data:", err);
+      }
+    };
+    if (id) {
+      fetchPatientData(id);
     }
   }, [id, reset]);
 
@@ -176,7 +178,10 @@ const AddPatient = () => {
     appendOrEmpty("visitType", data.visitType);
 
     formData.append("address", JSON.stringify(data.address));
-    formData.append("emergencyContacts", JSON.stringify(data.emergencyContacts));
+    formData.append(
+      "emergencyContacts",
+      JSON.stringify(data.emergencyContacts)
+    );
     formData.append("medicalInfo", JSON.stringify(data.medicalInfo));
 
     if (data.image && data.image.length > 0 && data.image[0] instanceof File) {
@@ -190,126 +195,396 @@ const AddPatient = () => {
     try {
       const formData = preparePatientFormData(data);
 
-      const url = id
-        ? `http://localhost:3000/patients/${id}`
-        : `http://localhost:3000/patients/add`;
+      const url = id ? `/patients/${id}` : `/patients/add`;
 
       const method = id ? "patch" : "post";
 
       await apiClient[method](url, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      console.log([...formData.entries()]);
 
-      toast.success(id ? "Patient updated successfully" : "Patient added successfully");
+      toast.success(
+        id ? "Patient updated successfully" : "Patient added successfully"
+      );
 
       if (!id) reset();
-
     } catch (error) {
       const msg = error.response?.data?.message || error.message;
       toast.error(`Error: ${msg}`);
     }
   };
 
+  const isDisabled = (id) => {
+    return !!id; // لو فيه id يبقى الانبوت مقفول
+  };
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
       <div className="w-full max-w-7xl bg-white rounded-3xl shadow-lg p-8">
-        <h1 className="text-3xl font-bold text-sky-950 mb-6">
-          {id ? "Edit Patient" : "Add New Patient"}
-        </h1>
+        <div className="flex justify-between  mb-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="mr-4 text-gray-600 hover:text-gray-900"
+          >
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+          </button>
+          <h1 className="text-3xl font-bold text-sky-950">
+            {id ? "Edit Patient" : "Add New Patient"}
+          </h1>
+          {id && (
+            <div className="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg">
+              <p className="font-medium">Serial: {watch("serialNumber")}</p>
+              <p className="text-sm">
+                Created: {new Date(watch("createdAt")).toLocaleDateString()}
+              </p>
+            </div>
+          )}
+        </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        <form
+          onSubmit={handleSubmit((data) => onSubmit(data))}
+          className="space-y-8"
+        >
           {/* Image & Personal Info */}
           <div className="p-6 rounded-xl border-2 border-gray-100">
             <div className="flex items-center gap-6 mb-6">
               <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
                 {imagePreview ? (
-                  <img src={imagePreview} alt="Patient" className="w-full h-full object-cover" />
+                  <img
+                    src={imagePreview}
+                    alt="Patient"
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   <span className="text-gray-500">Image</span>
                 )}
               </div>
               <label className="cursor-pointer bg-blue-200 text-blue-950 font-semibold px-4 py-2 rounded-xl hover:bg-blue-100">
                 Upload Image
-                <input type="file" {...register("image")} accept="image/*" className="hidden" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  {...register("image")}
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      setImagePreview(URL.createObjectURL(file));
+                    }
+                  }}
+                  className="hidden"
+                />
               </label>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Input label="Full Name" name="fullName" register={register} required error={errors.fullName} />
-              <Input label="National ID" name="nationalId" register={register} error={errors.nationalId} />
-              <Input label="Phone" name="phone" register={register} required error={errors.phone} />
-              <Input label="Email" name="email" type="email" register={register} required error={errors.email} />
-              <PrimaryDate label="Date of Birth" name="dateOfBirth" control={control} error={errors.dateOfBirth} />
-              <PrimarySelect label="Gender" name="gender" control={control} options={[{ value: "0", label: "Male" }, { value: "1", label: "Female" }]} error={errors.gender} />
-              <PrimarySelect label="Marital Status" name="maritalStatus" control={control} options={[{ value: "single", label: "Single" }, { value: "married", label: "Married" }, { value: "divorced", label: "Divorced" }, { value: "widowed", label: "Widowed" }]} error={errors.maritalStatus} />
-              <PrimarySelect label="Visit Type" name="visitType" control={control} options={visitTypes} error={errors.visitType} />
+              <Input
+                label="Full Name"
+                name="fullName"
+                register={register}
+                error={errors.fullName}
+                disabled={isDisabled(id)}
+                className={
+                  isDisabled(id) ? "opacity-70 pointer-events-none" : ""
+                }
+              />
+              <Input
+                label="National ID"
+                name="nationalId"
+                register={register}
+                error={errors.nationalId}
+                disabled={isDisabled(id)}
+                className={
+                  isDisabled(id) ? "opacity-70 pointer-events-none" : ""
+                }
+              />
+              <Input
+                label="Phone"
+                name="phone"
+                register={register}
+                error={errors.phone}
+              />
+              <Input
+                label="Email"
+                name="email"
+                type="email"
+                register={register}
+                error={errors.email}
+                disabled={isDisabled(id)}
+                className={
+                  isDisabled(id) ? "opacity-70 pointer-events-none" : ""
+                }
+              />
+              <PrimaryDate
+                label="Date of Birth"
+                name="dateOfBirth"
+                control={control}
+                error={errors.dateOfBirth}
+                disabled={isDisabled(id)}
+                className={
+                  isDisabled(id) ? "opacity-70 pointer-events-none" : ""
+                }
+              />
+
+              <PrimarySelect
+                label="Gender"
+                name="gender"
+                control={control}
+                options={[
+                  { value: "0", label: "Male" },
+                  { value: "1", label: "Female" },
+                ]}
+                error={errors.gender}
+                disabled={isDisabled(id)}
+                className={
+                  isDisabled(id) ? "opacity-70 pointer-events-none" : ""
+                }
+              />
+
+              <PrimarySelect
+                label="Marital Status"
+                name="maritalStatus"
+                control={control}
+                options={[
+                  { value: "single", label: "Single" },
+                  { value: "married", label: "Married" },
+                  { value: "divorced", label: "Divorced" },
+                  { value: "widowed", label: "Widowed" },
+                ]}
+                error={errors.maritalStatus}
+              />
+              <PrimarySelect
+                label="Visit Type"
+                name="visitType"
+                control={control}
+                options={visitTypes}
+                error={errors.visitType}
+              />
             </div>
           </div>
 
-          {/* Address */}
+          {/* Address Section */}
           <div className="p-6 rounded-xl border-2 border-gray-100">
-            <h2 className="text-2xl font-semibold text-blue-950 mb-4">Address</h2>
+            <h2 className="text-2xl font-semibold text-blue-950 mb-4">
+              Address
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Input label="Street" name="address.street" register={register} error={errors.address?.street} />
-              <Input label="Building Number" name="address.buildingNumber" register={register} error={errors.address?.buildingNumber} />
-              <Input label="Floor" name="address.floor" register={register} error={errors.address?.floor} />
-              <Input label="Apartment No" name="address.apartment" register={register} error={errors.address?.apartment} />
-              <Input label="Note" name="address.note" register={register} error={errors.address?.note} />
+              <Input
+                label="Street"
+                name="address.street"
+                register={register}
+                error={errors.address?.street}
+              />
+              <Input
+                label="Building Number"
+                name="address.buildingNumber"
+                register={register}
+                error={errors.address?.buildingNumber}
+              />
+              <Input
+                label="Floor"
+                name="address.floor"
+                register={register}
+                error={errors.address?.floor}
+              />
+              <Input
+                label="Apartment No"
+                name="address.apartment"
+                register={register}
+                error={errors.address?.apartment}
+              />
+              <Input
+                label="Note"
+                name="address.note"
+                register={register}
+                error={errors.address?.note}
+              />
             </div>
           </div>
 
-          {/* Emergency Contacts */}
+          {/* Emergency Contacts Section */}
           <div className="p-6 rounded-xl border-2 border-gray-100">
-            <h2 className="text-2xl font-semibold text-blue-950 mb-4">Emergency Contacts</h2>
+            <h2 className="text-2xl font-semibold text-blue-950 mb-4">
+              Emergency Contacts
+            </h2>
             {contactFields.map((field, index) => (
-              <div key={field.id} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 p-4 rounded-lg relative">
-                <Input label="Name" name={`emergencyContacts[${index}].contactName`} register={register} error={errors.emergencyContacts?.[index]?.contactName} />
-                <Input label="Phone" name={`emergencyContacts[${index}].contactPhone`} register={register} error={errors.emergencyContacts?.[index]?.contactPhone} />
-                <Input label="Relation" name={`emergencyContacts[${index}].relation`} register={register} error={errors.emergencyContacts?.[index]?.relation} />
+              <div
+                key={field.id}
+                className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 p-4 rounded-lg relative "
+              >
+                <Input
+                  label="Name"
+                  name={`emergencyContacts[${index}].contactName`}
+                  register={register}
+                  error={errors.emergencyContacts?.[index]?.contactName}
+                />
+                <Input
+                  label="Phone"
+                  name={`emergencyContacts[${index}].contactPhone`}
+                  register={register}
+                  error={errors.emergencyContacts?.[index]?.contactPhone}
+                />
+                <Input
+                  label="Relation"
+                  name={`emergencyContacts[${index}].relation`}
+                  register={register}
+                  error={errors.emergencyContacts?.[index]?.relation}
+                />
                 {contactFields.length > 1 && (
-                  <button type="button" onClick={() => removeContact(index)} className="absolute top-2 right-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (
+                        confirm("Are you sure you want to delete this contact?")
+                      ) {
+                        removeContact(index);
+                      }
+                    }}
+                    className="absolute top-2 right-2"
+                  >
                     <TbXboxX className="text-red-600 w-5 h-5" />
                   </button>
                 )}
               </div>
             ))}
-            <PrimaryButton label="Add Contact" onClick={() => appendContact({ contactName: "", contactPhone: "", relation: "" })} />
+            <PrimaryButton
+              label="Add Contact"
+              onClick={() =>
+                appendContact({
+                  contactName: "",
+                  contactPhone: "",
+                  relation: "",
+                })
+              }
+            />
           </div>
 
-          {/* Medical Info */}
+          {/* Medical Information Section */}
           <div className="p-6 rounded-xl border-2 border-gray-100">
-            <h2 className="text-2xl font-semibold text-blue-950 mb-4">Medical Information</h2>
+            <h2 className="text-2xl font-semibold text-blue-950 mb-4">
+              Medical Information
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <PrimarySelect label="Blood Type" name="medicalInfo.bloodType" control={control} options={["A+","A-","B+","B-","AB+","AB-","O+","O-"].map(type => ({ value: type, label: type }))} error={errors.medicalInfo?.bloodType} />
-              <Input label="Height" name="medicalInfo.bodyHeight" register={register} error={errors.medicalInfo?.bodyHeight} />
-              <Input label="Weight" name="medicalInfo.bodyWeight" register={register} error={errors.medicalInfo?.bodyWeight} />
+              <PrimarySelect
+                label="Blood Type"
+                name="medicalInfo.bloodType"
+                control={control}
+                options={["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(
+                  (type) => ({ value: type, label: type })
+                )}
+                error={errors.medicalInfo?.bloodType}
+              />
+              <Input
+                label="Height"
+                name="medicalInfo.bodyHeight"
+                register={register}
+                error={errors.medicalInfo?.bodyHeight}
+              />
+              <Input
+                label="Weight"
+                name="medicalInfo.bodyWeight"
+                register={register}
+                error={errors.medicalInfo?.bodyWeight}
+              />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-              <MultiTagInput label="Chronic Diseases" name="medicalInfo.chronicDiseases" control={control} options={chronicDiseases} />
-              <MultiTagInput label="Allergies" name="medicalInfo.allergies" control={control} options={allergies} />
+              <MultiTagInput
+                label="Chronic Diseases"
+                name="medicalInfo.chronicDiseases"
+                control={control}
+                options={chronicDiseases}
+              />
+              <MultiTagInput
+                label="Allergies"
+                name="medicalInfo.allergies"
+                control={control}
+                options={allergies}
+              />
             </div>
 
             <div className="mt-6">
               <h3 className="text-xl font-semibold">Surgeries</h3>
               {surgeryFields.map((field, index) => (
-                <div key={field.id} className="relative p-4 border-2 border-gray-100 rounded space-y-2 bg-gray-50 mt-4">
-                  <MdDeleteOutline className="absolute top-2 right-2 w-6 h-6 text-red-500 cursor-pointer" onClick={() => removeSurgery(index)} />
-                  <Input label="Surgery Name" name={`medicalInfo.surgeries[${index}].surgeriesName`} register={register} />
-                  <Input label="Surgery Date" type="date" name={`medicalInfo.surgeries[${index}].surgeriesDate`} register={register} />
-                  <Input label="Hospital" name={`medicalInfo.surgeries[${index}].hospital`} register={register} />
-                  <Input label="Doctor Name" name={`medicalInfo.surgeries[${index}].doctorName`} register={register} />
-                  <Input label="Notes" name={`medicalInfo.surgeries[${index}].surgeriesNotes`} register={register} />
+                <div
+                  key={field.id}
+                  className="relative p-4 border-2 border-gray-100 rounded space-y-2 bg-gray-50 mt-4"
+                >
+                  <MdDeleteOutline
+                    className="absolute top-2 right-2 w-6 h-6 text-red-500 cursor-pointer"
+                    onClick={() => {
+                      if (
+                        confirm("Are you sure you want to delete this surgery?")
+                      ) {
+                        removeSurgery(index);
+                      }
+                    }}
+                  />
+                  <Input
+                    label="Surgery Name"
+                    name={`medicalInfo.surgeries[${index}].surgeryName`}
+                    register={register}
+                  />
+                  <Input
+                    label="Surgery Date"
+                    type="date"
+                    name={`medicalInfo.surgeries[${index}].surgeryDate`}
+                    register={register}
+                  />
+                  <Input
+                    label="Hospital"
+                    name={`medicalInfo.surgeries[${index}].hospital`}
+                    register={register}
+                  />
+                  <Input
+                    label="Doctor Name"
+                    name={`medicalInfo.surgeries[${index}].doctorName`}
+                    register={register}
+                  />
+                  <Input
+                    label="Notes"
+                    name={`medicalInfo.surgeries[${index}].surgeryNotes`}
+                    register={register}
+                  />
                 </div>
               ))}
-              <PrimaryButton label="Add Surgery" onClick={() => appendSurgery({ surgeriesName: "", surgeriesDate: "", hospital: "", doctorName: "", surgeriesNotes: "" })} />
+              <PrimaryButton
+                label="Add Surgery"
+                onClick={() =>
+                  appendSurgery({
+                    surgeryName: "",
+                    surgeryDate: "",
+                    hospital: "",
+                    doctorName: "",
+                    surgeryNotes: "",
+                  })
+                }
+              />
             </div>
           </div>
 
           <div className="flex justify-end mt-8">
-            <button type="submit" disabled={isSubmitting} className="bg-[#233955] text-white font-bold py-3 px-8 rounded-xl hover:bg-[#233960]">
-              {isSubmitting ? "Submitting..." : id ? "Update Patient" : "Add Patient"}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="bg-[#233955] text-white font-bold py-3 px-8 rounded-xl hover:bg-[#233960]"
+            >
+              {isSubmitting
+                ? "Submitting..."
+                : id
+                ? "Update Patient"
+                : "Add Patient"}
             </button>
           </div>
         </form>

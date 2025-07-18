@@ -17,7 +17,6 @@ import AddPatient from "./pages/patients/AddPatient";
 import Sidebar from "./core/components/layout/Sidebar";
 import Header from "./core/components/layout/Header";
 import { useState } from "react";
-
 function App() {
   const location = useLocation();
   const hideSidebarPaths = ["/login"];
@@ -56,6 +55,14 @@ function App() {
               />
               <Route
                 path="/patients/add"
+                element={
+                  <ProtectedRoute role={"Admin"}>
+                    <AddPatient />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/patients/:id/update"
                 element={
                   <ProtectedRoute role={"Admin"}>
                     <AddPatient />
