@@ -42,8 +42,8 @@ const DepartmentDetails = () => {
       {isLoading && <p>Loading...</p>}
       {!isLoading && (
         <>
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-semibold">Department Details</h1>
+          <div className="flex justify-between items-center ">
+            <h1 className="text-2xl font-semibold  mb-2 mt-4">Department Details</h1>
             <PrimaryModal
               title="Are you sure you want to delete this department?"
               onConfirm={deleteDepartment}

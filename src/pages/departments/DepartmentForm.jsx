@@ -170,10 +170,10 @@ const DepartmentForm = () => {
         <div className="bg-white overflow-hidden rounded-[8px]">
           {/* Header */}
           <div className="flex items-center gap-4 bg-[#f3f4f6] px-8 py-6 border-b border-gray-200">
-            <IoIosArrowBack
+            {/* <IoIosArrowBack
               className="h-5 w-5 text-[#233955] cursor-pointer"
               onClick={goBack}
-            />
+            /> */}
             <div className="flex items-center space-x-3">
               <div className="p-3 bg-white rounded-xl shadow-sm">
                 <FaRegBuilding className="h-8 w-8 text-[#233955]" />

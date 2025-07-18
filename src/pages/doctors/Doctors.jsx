@@ -22,9 +22,7 @@ const Doctors = () => {
   const [selectedDepartment, setSelectedDepartment] = useState("Department");
   const searchRef = useRef(null);
   const [result] = useInput(searchRef, refetch);
-  const searchHandler = (e) => {
-    // refetch({ name: e.target.value });
-  };
+
   const dropdownDepartmentSearchHandler = (e) => {
     refetchDepartments({ page: 1, title: e.target.value });
   };
@@ -46,10 +44,10 @@ const Doctors = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="">
       <header className="flex mb-4 justify-between items-center">
         <div className="flex gap-4">
-          <PrimaryInput onChange={searchHandler} ref={searchRef} />
+          <PrimaryInput ref={searchRef} />
           <PrimaryDropDown
             text={selectedDepartment}
             onSearch={dropdownDepartmentSearchHandler}

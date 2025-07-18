@@ -1,5 +1,9 @@
 import { useEffect, useState, useContext, createContext } from "react";
-import { apiClient } from "../utils/apiClient";
+import {
+  apiClient,
+  addTokenToLocalStorage,
+  getTokenFromLocalStorage,
+} from "../utils/apiClient";
 import { Endpoints } from "../utils/endpoints";
 import { encrypt } from "n-krypta";
 
@@ -17,35 +21,28 @@ export const AuthProvider = ({ children }) => {
     const publicKey = import.meta.env.VITE_AUTH_PUBLIC_KEY;
     const encryptedData = encrypt({ email, password }, publicKey);
 
-    console.log("encryptedData", encryptedData);
-
     try {
       const response = await apiClient.post(Endpoints.login, {
         data: encryptedData,
       });
       setUser({ token: response.data._id, role: response.data.role });
-      localStorage.setItem("token", response.data.token);
-
-      apiClient.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${response.data.token}`;
+      addTokenToLocalStorage(response.data.token);
     } catch (error) {
-      console.log("$$$$$$error", error.response.data.message ?? error);
       throw error.response.data ?? error;
     }
   };
   const checkAuth = async () => {
     try {
       setIsLoading(true);
-      const token = localStorage.getItem("token");
+      const token = getTokenFromLocalStorage();
 
       if (!token) {
         setIsLoading(false);
         return;
       }
-      apiClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-      const response = await apiClient.get(Endpoints.me);
+      const response = await apiClient.get(Endpoints.me, {
+        withCredentials: true,
+      });
 
       setUser({ _id: response.data.data._id, role: response.data.data.role });
     } catch (error) {
