@@ -29,7 +29,6 @@ const Doctors = () => {
     refetchDepartments({ page: 1, title: e.target.value });
   };
   const selectDepartmentHandler = (index) => {
-    // refetch({ department: index });
     setSelectedDepartment(
       index == 0 ? "None" : departmentsState.data?.data[index - 1]?.title
     );
@@ -73,9 +72,6 @@ const Doctors = () => {
         <Link to="/doctors/add">
           <PrimaryButton>Add Doctor</PrimaryButton>
         </Link>
-        {/* <Drawer buttonText="Add Doctor" title="Add">
-          <AddDoctor />
-        </Drawer> */}
       </header>
       <DoctorsList state={state} refetch={refetch} dispatch={dispatch} />
       <Pagination

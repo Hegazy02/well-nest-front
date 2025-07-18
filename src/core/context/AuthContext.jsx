@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext, createContext } from "react";
 import { apiClient } from "../utils/apiClient";
 import { Endpoints } from "../utils/endpoints";
+import { encrypt, decrypt } from "n-krypta";
 
 const AuthContext = createContext();
 export const useAuth = () => {
@@ -13,18 +14,24 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
   const login = async ({ email, password }) => {
+    const publicKey = import.meta.env.VITE_AUTH_PUBLIC_KEY;
+    const encryptedData = encrypt({ email, password }, publicKey);
+
+    console.log("encryptedData", encryptedData);
+
     try {
       const response = await apiClient.post(Endpoints.login, {
-        email,
-        password,
+        data: encryptedData,
       });
-
       setUser({ token: response.data._id, role: response.data.role });
       localStorage.setItem("token", response.data.token);
-      
-      apiClient.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
+
+      apiClient.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${response.data.token}`;
     } catch (error) {
-      console.log("error", error);
+      console.log("$$$$$$error", error.response.data.message ?? error);
+      throw error.response.data ?? error;
     }
   };
   const checkAuth = async () => {

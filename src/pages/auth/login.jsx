@@ -20,11 +20,10 @@ const LoginPage = () => {
 
     try {
       await login({ email, password });
-      
+
       navigate("/");
     } catch (err) {
       setError(err.message);
-      console.log("error", err);
     } finally {
       setIsLoading(false);
     }
