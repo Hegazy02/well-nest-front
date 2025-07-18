@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext, createContext } from "react";
 import { apiClient } from "../utils/apiClient";
 import { Endpoints } from "../utils/endpoints";
-import { encrypt, decrypt } from "n-krypta";
+import { encrypt } from "n-krypta";
 
 const AuthContext = createContext();
 export const useAuth = () => {
@@ -54,8 +54,13 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(false);
     }
   };
+  const logout = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+    delete apiClient.defaults.headers.common["Authorization"];
+  };
   return (
-    <AuthContext.Provider value={{ user, setUser, login, isLoading }}>
+    <AuthContext.Provider value={{ user, setUser, login, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
