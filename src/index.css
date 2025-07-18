@@ -1,1 +1,30 @@
 @import "tailwindcss";
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+
+
+/*Patient Form*/
+.bg-custom-blue1{
+   background-color: #014574;
+}
+.custom-blue1{
+   color: #014574;
+}
+.custom-blue2{
+   color: #0189BB;
+}
+.bg-custom-color{
+   background-color: #F5F9FB;
+}
+.circle{
+ font-family: Arial, sans-serif;
+  width: 60px;
+  height: 60px;
+  border-radius: 100%;
+text-align: center;
+}
+.bg{
+  background-color: #F1F7F7;
+  
+}
