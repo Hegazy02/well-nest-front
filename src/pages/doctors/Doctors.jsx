@@ -19,7 +19,11 @@ const Doctors = () => {
       page: 1,
     }
   );
-  const [selectedDepartment, setSelectedDepartment] = useState("Department");
+  const [selectedDepartment, setSelectedDepartment] = useState({
+    title: "Department",
+    _id: null,
+  });
+  const [avaliability, setAvailability] = useState("Availability");
   const searchRef = useRef(null);
   const [result] = useInput(searchRef, refetch);
 
@@ -28,16 +32,31 @@ const Doctors = () => {
   };
   const selectDepartmentHandler = (index) => {
     setSelectedDepartment(
-      index == 0 ? "None" : departmentsState.data?.data[index - 1]?.title
+      index == 0
+        ? { title: "Department", _id: null }
+        : departmentsState.data?.data[index - 1]
     );
     refetch({
       page: 1,
       departmentId:
         index == 0 ? null : departmentsState.data?.data[index - 1]?._id,
+      availability:
+        avaliability == "Availability"
+          ? null
+          : avaliability == "Available"
+          ? true
+          : false,
     });
   };
   const selectAvailabilityHandler = (index) => {
-    refetch({ availability: index == 1 ? true : index == 2 ? false : null });
+    setAvailability(
+      index == 0 ? "Availability" : index == 1 ? "Available" : "Unavailable"
+    );
+    refetch({
+      availability: index == 1 ? true : index == 2 ? false : null,
+      page: 1,
+      departmentId: selectedDepartment._id,
+    });
   };
   const pageChangeHandler = ({ selected: index }) => {
     refetch({ page: index + 1 });
@@ -49,7 +68,7 @@ const Doctors = () => {
         <div className="flex gap-4">
           <PrimaryInput ref={searchRef} />
           <PrimaryDropDown
-            text={selectedDepartment}
+            text={selectedDepartment.title}
             onSearch={dropdownDepartmentSearchHandler}
             onSelect={selectDepartmentHandler}
           >
@@ -59,7 +78,7 @@ const Doctors = () => {
             ))}
           </PrimaryDropDown>
           <PrimaryDropDown
-            text="Availability"
+            text={avaliability}
             onSelect={selectAvailabilityHandler}
           >
             <p>All</p>
