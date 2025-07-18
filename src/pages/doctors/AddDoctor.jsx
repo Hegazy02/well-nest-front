@@ -244,6 +244,28 @@ const AddDoctor = () => {
         )}
         <input
           type={type}
+          onKeyDown={(e) => {
+            // Allow control keys: backspace, delete, tab, escape, enter, arrows
+            if (
+              [
+                "Backspace",
+                "Delete",
+                "Tab",
+                "Escape",
+                "Enter",
+                "ArrowLeft",
+                "ArrowRight",
+              ].includes(e.key) ||
+              (e.ctrlKey && ["a", "c", "v", "x"].includes(e.key.toLowerCase()))
+            ) {
+              return;
+            }
+
+            // Block non-numeric keys
+            if (type === "tel" && !/^\d$/.test(e.key)) {
+              e.preventDefault();
+            }
+          }}
           {...register(name, {
             required: required ? `${label} is required` : false,
             ...(type === "email" && {
