@@ -11,8 +11,8 @@ const Dashboard = () => {
       <PatientOverviewChart />
 
       <div className="flex gap-4">
-        <PatientDepartmentDonutChart className="flex-grow"/>
-        <DoctorsScheduleList  className="flex-grow"/>
+        <PatientDepartmentDonutChart className="flex-grow" />
+        <DoctorsScheduleList className="flex-grow" />
       </div>
     </div>
   );

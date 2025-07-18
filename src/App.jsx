@@ -17,6 +17,7 @@ import AddPatient from "./pages/patients/AddPatient";
 import Sidebar from "./core/components/layout/Sidebar";
 import Header from "./core/components/layout/Header";
 import { useState } from "react";
+import 'react-loading-skeleton/dist/skeleton.css';
 
 function App() {
   const location = useLocation();
@@ -33,7 +34,7 @@ function App() {
           {!shouldHideSidebar  && (
             <Sidebar onClick={(value) => setTitle(value)} />
           )}
-          <div className="flex-grow mr-4">
+          <div className="flex-grow mr-4 relative">
             {!shouldHideSidebar && !isNested && <Header title={title} />}
 
             <Routes>

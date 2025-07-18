@@ -5,6 +5,7 @@ import PrimaryTableRow from "../../../core/components/PrimaryTableRow";
 import { RiDeleteBin7Line } from "react-icons/ri";
 import axios from "axios";
 import { toast } from "react-toastify";
+import Loader from "../../../core/components/Loader";
 
 const genderMapper = {
   0: "Male",
@@ -42,7 +43,7 @@ const PatientsList = () => {
     fetchPatients();
   }, []);
 
-    const deletePatient = async (id) => {
+  const deletePatient = async (id) => {
     try {
       await axios.delete(`http://localhost:3000/patients/${id}`);
       setPatients((prev) => prev.filter((p) => p._id !== id));
@@ -82,7 +83,7 @@ const PatientsList = () => {
     }
   };
 
-  if (loading) return <p className="p-4">Loading...</p>;
+  if (loading) return <Loader />;
   if (error) return <p className="p-4 text-red-500">{error}</p>;
 
   return (
@@ -98,10 +99,7 @@ const PatientsList = () => {
         >
           <div className="flex items-center gap-2">
             <img
-              src={
-                patient.image ||
-                "https://placehold.co/48x48?text=No+Image"
-              }
+              src={patient.image || "https://placehold.co/48x48?text=No+Image"}
               alt={patient.fullName}
               className="w-10 h-10 rounded-full object-cover"
             />
@@ -116,14 +114,14 @@ const PatientsList = () => {
           <div>{genderMapper[Number(patient.gender)] || "Unknown"}</div>
           <div>{patient.medicalInfoId?.bloodType || "N/A"}</div>
           <div>{patient.visitTypeId?.visitType || "N/A"}</div>
-         <div className="flex gap-4 text-lg">
+          <div className="flex gap-4 text-lg">
             <button
               onClick={() =>
                 changeVisitType(patient._id, patient.visitTypeId?.visitType)
               }
               title="Change Visit Type"
             >
-            Edit
+              Edit
             </button>
 
             <PrimaryModal

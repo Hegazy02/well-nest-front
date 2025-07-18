@@ -8,7 +8,7 @@ import PrimaryModal from "../../../core/components/PrimaryModal";
 import { Endpoints } from "../../../core/utils/endpoints";
 import { toast } from "react-toastify";
 import { Link } from "react-router";
-
+import Skeleton from "react-loading-skeleton";
 const DoctorsList = ({ state, refetch, dispatch }) => {
   const columns = [
     { name: "Name", className: "flex-3" },
@@ -21,8 +21,10 @@ const DoctorsList = ({ state, refetch, dispatch }) => {
   ];
 
   const content = () => {
-    if (state.data.isLoading) {
-      return <p>Loading...</p>;
+    console.log("loading", state);
+
+    if (state.isLoading) {
+      return <DoctorsListSkeleton />;
     } else if (state.error) {
       return <p>{state.error.message}</p>;
     } else if (!state.data.data?.length) {
@@ -73,6 +75,38 @@ const DoctorsList = ({ state, refetch, dispatch }) => {
       console.log("error", error);
       toast.error("Something went wrong");
     }
+  };
+
+  const DoctorsListSkeleton = ({ rowCount = 10 }) => {
+    return (
+      <>
+        {Array.from({ length: rowCount }).map((_, index) => (
+          <PrimaryTableRow
+            key={index}
+            columns={[
+              "flex-3",
+              "flex-2",
+              "flex-2",
+              "flex-2",
+              "flex-2",
+              "flex-2",
+              "flex-1",
+            ]}
+          >
+            <div className="flex items-center gap-2">
+              <Skeleton circle width={40} height={40} />
+              <Skeleton width={100} height={20} />
+            </div>
+            <Skeleton width={90} height={20} />
+            <Skeleton width={100} height={20} />
+            <Skeleton width={50} height={20} />
+            <Skeleton width={50} height={20} />
+            <Skeleton width={100} height={28} borderRadius={6} />
+            <Skeleton width={50} height={20} />
+          </PrimaryTableRow>
+        ))}
+      </>
+    );
   };
 
   return (

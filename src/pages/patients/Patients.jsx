@@ -3,8 +3,9 @@ import axios from "axios";
 import PatientsList from "./components/PatientsList";
 import PrimaryInput from "../../core/components/PrimaryInput";
 import Pagination from "../../core/components/Pagination";
-import { Link } from 'react-router'; 
+import { Link } from "react-router";
 import PrimaryButton from "../../core/components/PrimaryButton";
+import Loader from "../../core/components/Loader";
 
 const Patients = () => {
   const [patients, setPatients] = useState([]);
@@ -51,7 +52,6 @@ const Patients = () => {
 
   return (
     <div className="flex min-h-screen">
-
       <div className="flex-1 p-4">
         <div className="flex items-center justify-between mb-4 md:hidden">
           <h2 className="text-xl font-bold">Patients</h2>
@@ -65,12 +65,14 @@ const Patients = () => {
             className="flex-1"
           />
           <Link to="/patients/add" className="w-full sm:w-auto">
-            <PrimaryButton className="w-full sm:w-auto">Add Patient</PrimaryButton>
+            <PrimaryButton className="w-full sm:w-auto">
+              Add Patient
+            </PrimaryButton>
           </Link>
         </header>
 
         {loading ? (
-          <p className="text-center">Loading...</p>
+          <Loader />
         ) : (
           <>
             <PatientsList patients={patients} />

@@ -7,6 +7,7 @@ import PrimaryModal from "../../core/components/PrimaryModal";
 import { Endpoints } from "../../core/utils/endpoints";
 import { toast } from "react-toastify";
 import { Link } from "react-router";
+import Loader from "../../core/components/Loader";
 
 const genderMapper = {
   0: "Male",
@@ -67,22 +68,25 @@ const PatientsList = ({ state, dispatch }) => {
       toast.error("Something went wrong");
     }
   };
-const renderContent = () => {
-  if (state?.isLoading) {
-    return <p>Loading...</p>;
-  }
+  const renderContent = () => {
+    if (state?.isLoading) {
+      return <Loader />;
+    }
 
-  if (state?.error) {
-    return <p>{state.error.message}</p>;
-  }
+    if (state?.error) {
+      return <p>{state.error.message}</p>;
+    }
 
-if (!state?.data || !Array.isArray(state.data.data) || !state.data.data.length) {
-    return <p>No patients found.</p>;
-}
+    if (
+      !state?.data ||
+      !Array.isArray(state.data.data) ||
+      !state.data.data.length
+    ) {
+      return <p>No patients found.</p>;
+    }
 
-  return null; 
-};
-
+    return null;
+  };
 
   const contentResult = renderContent();
 
