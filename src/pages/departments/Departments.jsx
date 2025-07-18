@@ -4,7 +4,7 @@ import DepartmentCard from "./components/DepartmentCard";
 import Pagination from "../../core/components/Pagination";
 import PrimaryButton from "../../core/components/PrimaryButton";
 import { Link } from "react-router";
-
+import { DepartmentCardSkeleton } from "./components/DepartmentCardSkeleton";
 const Departments = () => {
   const { state, dispatch, refetch } = useQuery(Endpoints.departments, "GET", {
     page: 1,
@@ -14,6 +14,7 @@ const Departments = () => {
   const pageChangeHandler = ({ selected: index }) => {
     refetch({ page: index + 1, doctorImages: true });
   };
+  
   return (
     <>
       <div className="flex justify-end mb-2">
@@ -22,9 +23,11 @@ const Departments = () => {
         </Link>
       </div>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {state?.data?.data?.map((department) => (
-          <DepartmentCard key={department._id} department={department} />
-        ))}
+        {state.isLoading
+          ? [...Array(4)].map((_, i) => <DepartmentCardSkeleton key={i} />)
+          : state?.data?.data?.map((dept) => (
+              <DepartmentCard key={dept._id} department={dept} />
+            ))}
       </div>
       <Pagination
         totalPages={state?.data?.totalPages}
