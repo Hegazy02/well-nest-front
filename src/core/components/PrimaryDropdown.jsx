@@ -88,15 +88,16 @@ const PrimaryDropDown = ({
                 autoComplete="off"
               />
             )}
-            {React.Children.map(children, (child, index) =>
-              React.cloneElement(child, {
+            {React.Children.map(children, (child, index) => {
+              if (!React.isValidElement(child)) return null;
+
+              return React.cloneElement(child, {
                 className:
-                  child.props.className +
-                  " " +
-                  "cursor-pointer hover:bg-gray-100 p-2 ",
+                  (child.props.className || "") +
+                  " cursor-pointer hover:bg-gray-100 p-2",
                 onClick: () => selectHandler(index),
-              })
-            )}
+              });
+            })}
           </div>
         </div>
       </div>
