@@ -34,7 +34,7 @@ const MoreEventsModal = ({ events, onClose, onSelectEvent }) => {
                     onSelectEvent(event)
                   }}
                 >
-                  <div className="text-white">
+                  <div className="text-black">
                     <div className="font-semibold text-lg mb-1">{event.doctorName}</div>
                     <div className="text-sm opacity-90">
                       {format(event.start, "hh:mm a")} - {format(event.end, "hh:mm a")}
