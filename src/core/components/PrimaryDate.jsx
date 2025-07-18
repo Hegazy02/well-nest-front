@@ -1,7 +1,7 @@
 import React from 'react'
 import { Controller } from "react-hook-form";
 
-const PrimaryDate = ({ control, name, label, error }) => {
+const PrimaryDate = ({ control, name, label, error , disabled}) => {
   return (
     <div className="w-full">
       <label htmlFor={name} className="block text-sm font-medium text-[#233955] mb-2">
@@ -10,6 +10,8 @@ const PrimaryDate = ({ control, name, label, error }) => {
       <Controller
         name={name}
         control={control}
+         disabled={disabled}
+
         render={({ field }) => (
           <input
             {...field}

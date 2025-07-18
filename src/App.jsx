@@ -12,7 +12,6 @@ import DepartmentDetails from "./pages/departments/DepartmentDetails";
 import DepartmentForm from "./pages/departments/DepartmentForm";
 import Patients from "./pages/patients/Patients";
 import PatientDetails from "./pages/patients/PatientDetails";
-import KeywordsInput from "./pages/patients/components/MultiTagInput";
 import "./index.css";
 import AddPatient from "./pages/patients/AddPatient";
 import Sidebar from "./core/components/layout/Sidebar";
@@ -51,6 +50,14 @@ function App() {
               />
               <Route
                 path="/patients/add"
+                element={
+                  <ProtectedRoute role={"Admin"}>
+                    <AddPatient />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/patients/:id/update"
                 element={
                   <ProtectedRoute role={"Admin"}>
                     <AddPatient />
