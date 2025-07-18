@@ -8,8 +8,8 @@ export default function DoctorFilter({ doctors, selectedDoctor, onDoctorChange }
     <div className="flex items-center space-x-3">
       <UserCheck className="h-5 w-5 text-gray-500" />
       <Select value={selectedDoctor} onValueChange={onDoctorChange}>
-        <SelectTrigger className="w-64">
-<SelectValue placeholder={selectedDoctor === "all" ? "All Doctors" : selectedDoctor} />
+        <SelectTrigger className="w-60">
+          <SelectValue placeholder={selectedDoctor === "all" ? "All Doctors" : selectedDoctor} />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Doctors</SelectItem>

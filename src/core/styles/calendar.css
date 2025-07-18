@@ -1,4 +1,3 @@
-/* Custom styles for react-big-calendar */
 .rbc-calendar {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
     "Droid Sans", "Helvetica Neue", sans-serif;
@@ -15,7 +14,7 @@
 .rbc-month-view {
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .rbc-date-cell {
@@ -70,9 +69,7 @@
   color: #111827;
 }
 
-.rbc-month-row {
-  min-height: 160px;
-}
+
 
 .rbc-event-content {
   white-space: normal;
@@ -80,18 +77,21 @@
   text-overflow: initial;
 }
 
-/* في ملف global.css أو داخل JSX */
 .rbc-time-view {
-  min-height: 1000px !important;
+  max-height: none !important;
 }
 
+
 .rbc-time-content {
-  min-height: 1000px !important;
+  overflow-y: visible !important;
+  height: auto !important;
 }
+
 
 .rbc-timeslot-group {
   min-height: 80px !important;
 }
+
 
 
 /* Spinner animation */

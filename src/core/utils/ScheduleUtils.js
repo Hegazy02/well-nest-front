@@ -1,6 +1,3 @@
-import { parse, setHours, setMinutes } from "date-fns"
-import { nextDay } from "date-fns"
-
 const dayMap = {
   Sunday: 0,
   Monday: 1,
@@ -11,41 +8,60 @@ const dayMap = {
   Saturday: 6,
 }
 
-
-
 export function convertScheduleToEvents(schedules) {
   return schedules.map((schedule) => {
-    const { day, from, to, doctorName, id } = schedule
+    const { day, from, to, doctorName, id, date, doctorId } = schedule 
 
     const [fromHour, fromMin] = from.split(":").map(Number)
     const [toHour, toMin] = to.split(":").map(Number)
 
-    const eventStart = setMinutes(
-      setHours(nextDay(new Date(), dayMap[day]), fromHour),
-      fromMin
-    )
+    let baseDate
+    if (date) {
+      baseDate = new Date(date)
+    } else {
+      console.warn("No date provided for schedule, calculating next occurrence")
+      baseDate = getNextDayDate(day)
+    }
 
-    const eventEnd = setMinutes(
-      setHours(nextDay(new Date(), dayMap[day]), toHour),
-      toMin
-    )
+    const eventStart = new Date(baseDate)
+    eventStart.setHours(fromHour, fromMin, 0, 0)
+    const eventEnd = new Date(baseDate)
+    eventEnd.setHours(toHour, toMin, 0, 0)
 
     return {
-      id,
+      id, 
       title: doctorName,
       start: eventStart,
       end: eventEnd,
       doctorName,
+      doctorId, 
     }
   })
 }
 
-export function getDoctorColor(doctorName) {
-  const colors = ["#6366F1", "#14B8A6", "#F97316", "#84CC16", "#A855F7", "#06B6D4"]
-  const hash = doctorName.split("").reduce((a, b) => {
-    a = (a << 5) - a + b.charCodeAt(0)
-    return a & a
-  }, 0)
+function getNextDayDate(dayName) {
+  const today = new Date()
+  const todayIndex = today.getDay()
+  const targetIndex = dayMap[dayName]
+  let daysToAdd = targetIndex - todayIndex
+  if (daysToAdd <= 0) daysToAdd += 7
+  const targetDate = new Date()
+  targetDate.setDate(today.getDate() + daysToAdd)
+  return targetDate
+}
 
-  return colors[Math.abs(hash) % colors.length]
+const colors = ["#96bcffff", "#7999dcff"]
+
+const doctorColorMap = new Map()
+let colorIndex = 0
+
+export function getDoctorColor(doctorName) {
+  if (doctorColorMap.has(doctorName)) {
+    return doctorColorMap.get(doctorName)
+  }
+
+  const assignedColor = colors[colorIndex % colors.length]
+  doctorColorMap.set(doctorName, assignedColor)
+  colorIndex++
+  return assignedColor
 }

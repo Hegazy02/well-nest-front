@@ -74,10 +74,10 @@ const PrimaryDropDown = ({
           <div
             ref={dropdownRef}
             id="dropdown-menu"
-            className={`${
-              isOpen ? "" : "hidden"
-            } absolute z-10 left-0 mt-1 rounded-md shadow-lg bg-white ring-1 ring-gray-300 ring-opacity-5 p-1 space-y-1`}
+            className={`${isOpen ? "" : "hidden"
+              } absolute z-10 left-0 mt-1 rounded-md shadow-lg bg-white ring-1 ring-gray-300 ring-opacity-5 p-1 space-y-1 min-w-[220px] max-h-[300px] overflow-y-auto`}
           >
+
             {onSearch && (
               <input
                 onInput={searchHandler}

@@ -23,3 +23,9 @@
     background-color: var(--secondary-gray);
 }
 
+
+/* Hide default day cell events in month view */
+.fc .fc-daygrid-event-harness {
+  display: none !important;
+}
+

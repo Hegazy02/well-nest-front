@@ -4,7 +4,7 @@ import { FiEdit } from "react-icons/fi";
 import { AiOutlineDelete } from "react-icons/ai";
 import PrimaryDropDown from "../../../core/components/PrimaryDropDown";
 import { apiClient } from "../../../core/utils/apiClient";
-import PrimaryModal from "../../../core/components/primaryModal";
+import PrimaryModal from "../../../core/components/PrimaryModal";
 import { Endpoints } from "../../../core/utils/endpoints";
 import { toast } from "react-toastify";
 import { Link } from "react-router";
@@ -80,63 +80,67 @@ const DoctorsList = ({ state, refetch, dispatch }) => {
       {content()
         ? content()
         : state.data.data?.map((doctor) => {
-            return (
-              <PrimaryTableRow
-                key={doctor._id}
-                columns={columns.map((item) => item.className)}
-              >
-                <div className="flex items-center gap-2">
-                  <img
-                    src={
-                      doctor.image ??
-                      "https://md.usembassy.gov/wp-content/uploads/sites/210/Profile-Icon.png"
-                    }
-                    alt="doctor"
-                    className="w-10 h-10 rounded-full object-cover "
-                  />
-                  <p className="text-md font-bold">
-                    {doctor.name.length > 25
-                      ? `${doctor.name.slice(0, 25)}...`
-                      : doctor.name}
-                  </p>
-                </div>
-                <div>{doctor.phone}</div>
-                <div>{doctor.department.title}</div>
-                <div>{doctor.patientCount}</div>
-                <div>{doctor.todayAppointmentCount}</div>
-                <PrimaryDropDown
-                  text={doctor.availability ? "Available" : "Unavailable"}
-                  onSelect={(index) => {
-                    changeAvailabilityHandler(doctor._id, index);
-                  }}
-                  hasIcon={false}
-                  className="flex-1 w-37"
-                  textClassName={
-                    doctor.availability
-                      ? "border bg-[#DFF8F9] text-[#233955] border-[#A2F2EE] px-2 p-1 rounded-lg w-full"
-                      : "border bg-[#FFF4F4] text-[#FD4245] border-[#FD4245] px-2 p-1 rounded-lg w-full"
+          return (
+            <PrimaryTableRow
+              key={doctor._id}
+              columns={columns.map((item) => item.className)}
+            >
+              <div className="flex items-center gap-2">
+                <img
+                  src={
+                    doctor.image ??
+                    "https://md.usembassy.gov/wp-content/uploads/sites/210/Profile-Icon.png"
                   }
+                  alt="doctor"
+                  className="w-10 h-10 rounded-full object-cover "
+                />
+                <Link
+                  to={`/doctors/${doctor._id}`}
+                  className="text-md font-bold text-[#1e3a5f] px-2 py-1 rounded-md hover:bg-[#e6f3ff] transition-all duration-200"
                 >
-                  <p>Available</p>
-                  <p>Unavailable</p>
-                </PrimaryDropDown>
+                  {doctor.name.length > 25
+                    ? `${doctor.name.slice(0, 25)}...`
+                    : doctor.name}
+                </Link>
 
-                <div className="flex gap-4 text-lg text-[#4B4D4F]">
-                  <Link to={`/doctors/${doctor._id}/update`}>
-                    <FiEdit className="cursor-pointer" />
-                  </Link>
-                  <PrimaryModal
-                    title="Are you sure you want to delete this doctor?"
-                    onConfirm={() => {
-                      deleteDoctorHandler(doctor._id);
-                    }}
-                  >
-                    <AiOutlineDelete className="cursor-pointer" />
-                  </PrimaryModal>
-                </div>
-              </PrimaryTableRow>
-            );
-          })}
+              </div>
+              <div>{doctor.phone}</div>
+              <div>{doctor.department.title}</div>
+              <div>{doctor.patientCount}</div>
+              <div>{doctor.todayAppointmentCount}</div>
+              <PrimaryDropDown
+                text={doctor.availability ? "Available" : "Unavailable"}
+                onSelect={(index) => {
+                  changeAvailabilityHandler(doctor._id, index);
+                }}
+                hasIcon={false}
+                className="flex-1 w-37"
+                textClassName={
+                  doctor.availability
+                    ? "border bg-[#DFF8F9] text-[#233955] border-[#A2F2EE] px-2 p-1 rounded-lg w-full"
+                    : "border bg-[#FFF4F4] text-[#FD4245] border-[#FD4245] px-2 p-1 rounded-lg w-full"
+                }
+              >
+                <p>Available</p>
+                <p>Unavailable</p>
+              </PrimaryDropDown>
+
+              <div className="flex gap-4 text-lg text-[#4B4D4F]">
+                <Link to={`/doctors/${doctor._id}/update`}>
+                  <FiEdit className="cursor-pointer" />
+                </Link>
+                <PrimaryModal
+                  title="Are you sure you want to delete this doctor?"
+                  onConfirm={() => {
+                    deleteDoctorHandler(doctor._id);
+                  }}
+                >
+                  <AiOutlineDelete className="cursor-pointer" />
+                </PrimaryModal>
+              </div>
+            </PrimaryTableRow>
+          );
+        })}
     </PrimaryTable>
   );
 };

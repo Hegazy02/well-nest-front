@@ -5,6 +5,8 @@ export class Endpoints {
   static doctors = `doctors`;
   static patients = `patients`;
   static departments = `departments`;
+  static appointments = `appointments`;
+  static calendar = `calendar`;
   static login = `auth/login`;
   static me = `auth/me`;
 }

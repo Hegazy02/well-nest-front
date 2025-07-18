@@ -16,6 +16,9 @@ import PatientDetails from "./pages/patients/PatientDetails";
 import "./index.css";
 import AddPatient from "./pages/patients/AddPatient";
 import Sidebar from "./core/components/layout/Sidebar";
+import DoctorDetails from "./pages/doctors/Doctor-details/DoctorDetails";
+
+
 
 function App() {
   const location = useLocation();
@@ -85,7 +88,15 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route
+                <Route
+            path="/doctors/:id"
+            element={
+              <ProtectedRoute role={"Admin"}>
+                <DoctorDetails/>
+              </ProtectedRoute>
+            }
+          />
+          <Route
                 path="/departments"
                 element={
                   <ProtectedRoute role={"Admin"}>
@@ -114,6 +125,14 @@ function App() {
                 element={
                   <ProtectedRoute role={"Admin"}>
                     <DepartmentForm />
+                  </ProtectedRoute>
+                }
+              />
+                   <Route
+                path="/calendar"
+                element={
+                  <ProtectedRoute role={"Admin"}>
+                    <DoctorSchedule/>
                   </ProtectedRoute>
                 }
               />

@@ -50,7 +50,7 @@ export function SelectTrigger({ children, className = "", onClick, isOpen, ...pr
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-10 w-full items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 ${className}`}
+      className={`flex h-10 w-full max-w-xs items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
       {...props}
     >
       {children}
@@ -70,7 +70,7 @@ export function SelectContent({ children, isOpen, onSelect, value, className = "
 
   return (
     <div
-      className={`absolute top-full left-0 right-0 z-50 mt-1 max-h-60 overflow-auto rounded-md border bg-white shadow-md ${className}`}
+className={`absolute top-full left-0 right-0 z-50 mt-1 max-h-60 overflow-auto rounded-md border bg-white shadow-md w-60 ${className}`}
     >
       {React.Children.map(children, (child) => {
         if (child.type === SelectItem) {
@@ -88,8 +88,8 @@ export function SelectContent({ children, isOpen, onSelect, value, className = "
 export function SelectItem({ children, value, onClick, isSelected, className = "" }) {
   return (
     <div
-      className={`relative flex cursor-pointer select-none items-center rounded-md px-3 py-2 text-sm hover:bg-teal-100 ${
-        isSelected ? "bg-teal-500 text-white" : "text-gray-800"
+      className={`relative flex cursor-pointer select-none items-center rounded-md px-3 py-2 text-sm hover:bg-blue-100 ${
+        isSelected ? "bg-blue-500 text-white" : "text-gray-800"
       } ${className}`}
       onClick={onClick}
     >
