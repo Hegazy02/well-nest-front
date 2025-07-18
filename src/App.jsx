@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router";
+import { Routes, Route, useLocation, useMatches } from "react-router";
 import "./App.css";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Doctors from "./pages/doctors/Doctors";
@@ -15,23 +15,28 @@ import PatientDetails from "./pages/patients/PatientDetails";
 import "./index.css";
 import AddPatient from "./pages/patients/AddPatient";
 import Sidebar from "./core/components/layout/Sidebar";
+import Header from "./core/components/layout/Header";
+import { useState } from "react";
 function App() {
+  const location = useLocation();
+  const hideSidebarPaths = ["/login"];
+  const shouldHideSidebar = hideSidebarPaths.includes(location.pathname);
+  const [title, setTitle] = useState("Dashboard");
+  const isNested = location.pathname.split("/").length > 2;
+  console.log("isNested", isNested);
+
   return (
     <>
       <AuthProvider>
-        <div className="flex">
-          <Sidebar />
-          <div className="flex-grow">
+        <div className="flex gap-4">
+          {!shouldHideSidebar  && (
+            <Sidebar onClick={(value) => setTitle(value)} />
+          )}
+          <div className="flex-grow mr-4">
+            {!shouldHideSidebar && !isNested && <Header title={title} />}
+
             <Routes>
               <Route path="/login" element={<Login />} />
-              {/* <Route
-            path="/KeywordsInput"
-            element={
-              <ProtectedRoute role={"Admin"}>
-                <KeywordsInput />
-              </ProtectedRoute>
-            }
-          /> */}
               <Route
                 path="/"
                 element={
