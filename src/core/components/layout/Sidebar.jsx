@@ -11,7 +11,7 @@ import { MdDashboardCustomize } from "react-icons/md";
 import { PiFlowerLotusLight } from "react-icons/pi";
 import { useAuth } from "../../context/AuthContext";
 
-const Sidebar = () => {
+const Sidebar = ({ onClick }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
@@ -32,7 +32,7 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <div
-        className={`fixed md:static top-0 left-0  w-65 z-50 transform transition-transform  
+        className={`min-w-70 fixed md:static top-0 left-0  w-65 z-50 transform transition-transform  
         ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0 md:flex md:flex-col`}
@@ -58,7 +58,10 @@ const Sidebar = () => {
                           : "hover:bg-cyan-200 hover:text-blue-950"
                       }`
                     }
-                    onClick={() => setIsOpen(false)}
+                    onClick={() => {
+                      setIsOpen(false);
+                      onClick("Dashboard");
+                    }}
                   >
                     <MdDashboardCustomize className="w-6 h-6 mr-2" />
                     Dashboard
@@ -75,7 +78,10 @@ const Sidebar = () => {
                           : "hover:bg-cyan-200 hover:text-blue-950"
                       }`
                     }
-                    onClick={() => setIsOpen(false)}
+                    onClick={() => {
+                      setIsOpen(false);
+                      onClick("Doctors");
+                    }}
                   >
                     <FaUserDoctor className="w-6 h-6 mr-2" />
                     Doctor
@@ -92,7 +98,10 @@ const Sidebar = () => {
                           : "hover:bg-cyan-200 hover:text-blue-950"
                       }`
                     }
-                    onClick={() => setIsOpen(false)}
+                    onClick={() => {
+                      setIsOpen(false);
+                      onClick("Schedule");
+                    }}
                   >
                     <FaCalendarAlt className="w-6 h-6 mr-2" />
                     Doctors’ Schedule
@@ -109,7 +118,10 @@ const Sidebar = () => {
                           : "hover:bg-cyan-200 hover:text-blue-950"
                       }`
                     }
-                    onClick={() => setIsOpen(false)}
+                    onClick={() => {
+                      setIsOpen(false);
+                      onClick("Patients");
+                    }}
                   >
                     <FaBedPulse className="w-6 h-6 mr-2" />
                     Patient
@@ -126,7 +138,10 @@ const Sidebar = () => {
                           : "hover:bg-cyan-200 hover:text-blue-950"
                       }`
                     }
-                    onClick={() => setIsOpen(false)}
+                    onClick={() => {
+                      setIsOpen(false);
+                      onClick("Departments");
+                    }}
                   >
                     <FaHospital className="w-6 h-6 mr-2" />
                     Department
@@ -143,7 +158,10 @@ const Sidebar = () => {
                           : "hover:bg-cyan-200 hover:text-blue-950"
                       }`
                     }
-                    onClick={() => setIsOpen(false)}
+                    onClick={() => {
+                      setIsOpen(false);
+                      onClick("Appointments");
+                    }}
                   >
                     <FaCalendarCheck className="w-6 h-6 mr-2" />
                     Appointments

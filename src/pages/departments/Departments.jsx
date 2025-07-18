@@ -2,9 +2,6 @@ import { useQuery } from "../../core/hooks/useQuery";
 import { Endpoints } from "../../core/utils/endpoints";
 import DepartmentCard from "./components/DepartmentCard";
 import Pagination from "../../core/components/Pagination";
-import { useEffect } from "react";
-import { toast } from "react-toastify";
-import { apiClient } from "../../core/utils/apiClient";
 import PrimaryButton from "../../core/components/PrimaryButton";
 import { Link } from "react-router";
 
@@ -19,8 +16,7 @@ const Departments = () => {
   };
   return (
     <>
-      <div className="flex justify-between">
-        <h1 className="text-2xl font-semibold">Departments</h1>
+      <div className="flex justify-end mb-2">
         <Link to="/departments/add">
           <PrimaryButton>Add Department</PrimaryButton>
         </Link>
