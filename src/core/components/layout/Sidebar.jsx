@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { FaUserDoctor, FaBedPulse } from "react-icons/fa6";
-import {
-  FaCalendarAlt,
-  FaHospital,
-  FaCalendarCheck,
-  FaBars,
-} from "react-icons/fa";
+import { RiHotelBedLine } from "react-icons/ri";
+import { BsCalendarWeek } from "react-icons/bs";
+import { RiStethoscopeLine } from "react-icons/ri";
+import { LuHospital } from "react-icons/lu";
+import { LuCalendarCheck } from "react-icons/lu";
 import { MdDashboardCustomize } from "react-icons/md";
 import { PiFlowerLotusLight } from "react-icons/pi";
+import { MdOutlineDashboardCustomize } from "react-icons/md";
 import { useAuth } from "../../context/AuthContext";
+import { FaCalendarCheck ,FaCalendarAlt ,FaHospital } from "react-icons/fa";
 
 const Sidebar = ({ onClick }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +27,7 @@ const Sidebar = ({ onClick }) => {
           <span className="ml-2 text-xl font-bold">Well Nest</span>
         </div>
         <button onClick={toggleSidebar}>
-          <FaBars className="w-6 h-6" />
+          {/* <FaBars className="w-6 h-6" /> */}
         </button>
       </div>
 

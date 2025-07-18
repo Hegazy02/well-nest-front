@@ -1,134 +1,124 @@
-import { useEffect, useState } from "react";
+import { FiEdit } from "react-icons/fi";
+import { AiOutlineDelete } from "react-icons/ai";
+import { Link } from "react-router";
 import PrimaryTable from "../../../core/components/PrimaryTable";
-import PrimaryModal from "../../../core/components/PrimaryModal";
 import PrimaryTableRow from "../../../core/components/PrimaryTableRow";
-import { RiDeleteBin7Line } from "react-icons/ri";
-import axios from "axios";
-import { toast } from "react-toastify";
-import Loader from "../../../core/components/Loader";
+import PrimaryDropDown from "../../../core/components/PrimaryDropDown";
+import PrimaryModal from "../../../core/components/PrimaryModal";
 
-const genderMapper = {
-  0: "Male",
-  1: "Female",
-};
-
-const PatientsList = () => {
-  const [patients, setPatients] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
+const PatientsList = ({
+  patients = [],
+  visitTypes = [],
+  deletePatient,
+  changeVisitType,
+}) => {
   const columns = [
     { name: "Name", className: "flex-3" },
     { name: "Serial Number", className: "flex-2" },
     { name: "Phone", className: "flex-2" },
+    { name: "Age", className: "flex-2" },
     { name: "Gender", className: "flex-2" },
     { name: "Blood Type", className: "flex-2" },
     { name: "Visit Type", className: "flex-2" },
     { name: "Actions", className: "flex-1" },
   ];
+  
+const genderMapper = {
+  0: "Male",
+  1: "Female",
+};
 
-  const fetchPatients = async () => {
-    try {
-      const res = await axios.get("http://localhost:3000/patients");
-      setPatients(res.data.data);
-    } catch (err) {
-      console.log(err);
-      setError("Failed to load patients.");
-    } finally {
-      setLoading(false);
-    }
-  };
+const getGender = (gender) => {
+  return genderMapper[gender] || genderMapper[String(gender)] || "Unknown";
+};
 
-  useEffect(() => {
-    fetchPatients();
-  }, []);
+const visitTypeColors = {
+  new: "bg-blue-100 text-blue-700 border-blue-300",
+  checkup: "bg-green-100 text-green-700 border-green-300",
+  emergency: "bg-yellow-100 text-yellow-800 border-yellow-300",
+  deceased: "bg-red-100 text-red-700 border-red-300",
+};
 
-  const deletePatient = async (id) => {
-    try {
-      await axios.delete(`http://localhost:3000/patients/${id}`);
-      setPatients((prev) => prev.filter((p) => p._id !== id));
-      toast.success("Patient deleted successfully");
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to delete patient");
-    }
-  };
+const getVisitTypeColor = (visitType) => {
+  if (!visitType) return "bg-gray-100 text-gray-700 border-gray-300";
+  return (
+    visitTypeColors[visitType.toLowerCase()] ||
+    "bg-gray-100 text-gray-700 border-gray-300"
+  );
+};
 
-  const changeVisitType = async (id, currentType) => {
-    try {
-      const newType = currentType === "inpatient" ? "outpatient" : "inpatient";
 
-      await axios.patch(`http://localhost:3000/patients/${id}`, {
-        visitType: newType,
-      });
-
-      setPatients((prev) =>
-        prev.map((p) =>
-          p._id === id
-            ? {
-                ...p,
-                visitTypeId: {
-                  ...p.visitTypeId,
-                  visitType: newType,
-                },
-              }
-            : p
-        )
-      );
-
-      toast.success(`Visit type changed to ${newType}`);
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to update visit type");
-    }
-  };
-
-  if (loading) return <Loader />;
-  if (error) return <p className="p-4 text-red-500">{error}</p>;
+  if (patients.length === 0)
+    return <p className="text-center text-gray-500">No patients found.</p>;
 
   return (
     <PrimaryTable columns={columns} classes={"min-h-[85vh]"}>
-      {patients.length === 0 && (
-        <p className="text-center text-gray-500">No patients found.</p>
-      )}
-
       {patients.map((patient) => (
         <PrimaryTableRow
           key={patient._id}
           columns={columns.map((col) => col.className)}
         >
+          <Link to={`${patient._id}`}>
           <div className="flex items-center gap-2">
             <img
               src={patient.image || "https://placehold.co/48x48?text=No+Image"}
               alt={patient.fullName}
               className="w-10 h-10 rounded-full object-cover"
             />
+        
             <p className="text-md font-bold">
               {patient.fullName.length > 25
                 ? `${patient.fullName.slice(0, 25)}...`
                 : patient.fullName}
             </p>
           </div>
-          <div>{patient.serialNumber || "N/A"}</div>
-          <div>{patient.phone || "N/A"}</div>
-          <div>{genderMapper[Number(patient.gender)] || "Unknown"}</div>
-          <div>{patient.medicalInfoId?.bloodType || "N/A"}</div>
-          <div>{patient.visitTypeId?.visitType || "N/A"}</div>
-          <div className="flex gap-4 text-lg">
-            <button
-              onClick={() =>
-                changeVisitType(patient._id, patient.visitTypeId?.visitType)
-              }
-              title="Change Visit Type"
-            >
-              Edit
-            </button>
+          </Link>
 
+          {/* Serial Number */}
+          <div>{patient.serialNumber || "N/A"}</div>
+
+          {/* Phone */}
+          <div>{patient.phone || "N/A"}</div>
+
+          {/* Age */}
+          <div>{patient.age || "N/A"}</div>
+
+          {/* Gender */}
+          <div>{getGender(patient.gender)}</div>
+
+          {/* Blood Type */}
+          <div>{patient.medicalInfoId?.bloodType || "N/A"}</div>
+
+          {/* Visit Type */}
+          <PrimaryDropDown
+            text={patient.visitTypeId?.visitType || "N/A"}
+            onSelect={(index) => {
+              const selectedVisitType = visitTypes[index];
+              changeVisitType(patient._id, selectedVisitType);
+            }}
+            hasIcon={false}
+            className="flex-1 w-37"
+            textClassName={`border px-2 p-1 rounded-lg w-full ${getVisitTypeColor(
+              patient.visitTypeId?.visitType
+            )}`}
+          >
+            {visitTypes.map((type) => (
+              <p key={type}>{type}</p>
+            ))}
+          </PrimaryDropDown>
+
+          {/* Actions */}
+          <div className="flex gap-4 text-lg text-[#4B4D4F]">
+            <Link to={`/patients/${patient._id}/update`}>
+              <FiEdit className="cursor-pointer" />
+            </Link>
             <PrimaryModal
               title="Are you sure you want to delete this patient?"
-              onConfirm={() => deletePatient(patient._id)}
+              onConfirm={() => {
+                deletePatient(patient._id);
+              }}
             >
-              <button>delete</button>
+              <AiOutlineDelete className="cursor-pointer" />
             </PrimaryModal>
           </div>
         </PrimaryTableRow>

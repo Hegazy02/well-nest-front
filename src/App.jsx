@@ -64,6 +64,14 @@ function App() {
                 }
               />
               <Route
+                path="/patients/:id/update"
+                element={
+                  <ProtectedRoute role={"Admin"}>
+                    <AddPatient />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/patients/:id"
                 element={
                   <ProtectedRoute role={"Admin"}>
