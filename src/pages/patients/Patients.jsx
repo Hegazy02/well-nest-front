@@ -22,12 +22,10 @@ const Patients = () => {
 
   const { state, refetch } = useQuery(Endpoints.patients, "GET", filters);
 
-  // Fetch data when filters change (debounced)
   useEffect(() => {
     const timer = setTimeout(() => {
       refetch(filters);
     }, 300);
-
     return () => clearTimeout(timer);
   }, [filters]);
 
@@ -55,7 +53,6 @@ const Patients = () => {
     const selectedType = index === 0 ? "" : visitTypes[index - 1];
     
     setFilters((prev) => ({ ...prev, visitType: selectedType, page: 1 }));
-    console.log("visitType",);
   };
 
   const pageChangeHandler = ({ selected }) => {
@@ -75,8 +72,8 @@ const Patients = () => {
   const changeVisitType = async (id, newType) => {
     try {
       await apiClient.patch(`${Endpoints.patients}/${id}/visit-type`, {
-        status: { visitType: newType },
-      });
+        visitType: { visitType: newType },
+      });      
       refetch(filters);
       toast.success("Visit type updated successfully!");
     } catch (err) {

@@ -162,11 +162,11 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen flex">
       {/* Left Side Image */}
-      <div className="hidden  md:block w-1/2 relative">
+      <div className="hidden  md:block w-1/2 relative ">
         <img
           src={loginImage}
           alt="login background"
-          className="h-screen w-full object-cover"
+          className="h-screen w-full object-cover "
         />
       </div>
 
