@@ -4,7 +4,6 @@ import { PiCalendarCheckDuotone } from "react-icons/pi";
 import { MdOutlineUpcoming, MdOutlineCancel } from "react-icons/md";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { HiArrowUpRight, HiArrowDownLeft } from "react-icons/hi2";
-import Loader from "../../../core/components/Loader";
 import Skeleton from "react-loading-skeleton";
 
 const cardMeta = [

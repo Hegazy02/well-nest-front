@@ -81,29 +81,30 @@ const DoctorsList = ({ state, refetch, dispatch }) => {
     return (
       <>
         {Array.from({ length: rowCount }).map((_, index) => (
-          <PrimaryTableRow
-            key={index}
-            columns={[
-              "flex-3",
-              "flex-2",
-              "flex-2",
-              "flex-2",
-              "flex-2",
-              "flex-2",
-              "flex-1",
-            ]}
-          >
-            <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" key={index}>
+            <div className="flex items-center gap-2 flex-3">
               <Skeleton circle width={40} height={40} />
               <Skeleton width={100} height={20} />
             </div>
-            <Skeleton width={90} height={20} />
-            <Skeleton width={100} height={20} />
-            <Skeleton width={50} height={20} />
-            <Skeleton width={50} height={20} />
-            <Skeleton width={100} height={28} borderRadius={6} />
-            <Skeleton width={50} height={20} />
-          </PrimaryTableRow>
+            <div className={columns[1].className}>
+              <Skeleton width={90} height={20} />
+            </div>
+            <div className={columns[2].className}>
+              <Skeleton width={100} height={20} />
+            </div>
+            <div className={columns[3].className}>
+              <Skeleton width={50} height={20} />
+            </div>
+            <div className={columns[4].className}>
+              <Skeleton width={100} height={20} />
+            </div>
+            <div className={columns[5].className}>
+              <Skeleton width={50} height={20} />
+            </div>
+            <div className={columns[6].className}>
+              <Skeleton width={100} height={20} />
+            </div>
+          </div>
         ))}
       </>
     );
