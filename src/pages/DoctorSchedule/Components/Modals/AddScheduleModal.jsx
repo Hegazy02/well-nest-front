@@ -1,4 +1,3 @@
-"use client";
 import { useState, useEffect } from "react";
 import PrimaryDropDown from "../../../../core/components/PrimaryDropDown";
 import { Controller } from "react-hook-form";
