@@ -1726,12 +1726,13 @@ const onSubmit = async (data) => {
   try {
   
     // الخطوة الأهم: نرسل البيانات كما هي بدون تحويل
-    const appointmentData = {
-      doctorId: data.doctorId,
-      patientId: data.patientId,
-      date: `${data.date}T${data.timeSlot}:00`, // الصيغة: YYYY-MM-DDTHH:mm:ss
-      treatment: data.treatment
-    };
+const appointmentData = {
+    
+  doctor: data.doctorId, // بدل doctorId
+  patient: data.patientId, // بدل patientId
+  date: `${data.date}T${data.timeSlot}:00`,
+  treatment: data.treatment,
+};
 
     const res = await apiClient.post(
       Endpoints.appointments,
@@ -1766,33 +1767,31 @@ const onSubmit = async (data) => {
     }
   };
 
-  return (
+return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow-sm rounded-lg overflow-hidden max-w-4xl mx-auto">
+      <div className="bg-white overflow-hidden rounded-[8px] shadow-sm max-w-4xl mx-auto">
         {/* Header */}
-        <div className="bg-blue-50 px-6 py-4 border-b border-blue-100">
-          <div className="flex items-center">
-            <Link to="/appointments" className="mr-4 p-1 rounded-full hover:bg-blue-100">
-              <IoIosArrowBack className="h-5 w-5 text-blue-600" />
-            </Link>
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-white rounded-lg shadow">
-                <CiCalendar className="h-6 w-6 text-blue-600" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-800">Book New Appointment</h1>
-                <p className="text-gray-600">Schedule an appointment for a patient</p>
-              </div>
+        <div className="flex items-center gap-4 bg-[#f3f4f6] px-8 py-6 border-b border-gray-200">
+          <Link to="/appointments" className="flex items-center">
+            <IoIosArrowBack className="h-5 w-5 text-[#233955]" />
+          </Link>
+          <div className="flex items-center space-x-3">
+            <div className="p-3 bg-white rounded-xl shadow-sm">
+              <CiCalendar className="h-8 w-8 text-[#233955]" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-[#233955]">Book New Appointment</h1>
+              <p className="text-gray-600 mt-1">Schedule an appointment for a patient</p>
             </div>
           </div>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="p-8 space-y-8">
           {/* Doctor Selection */}
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-gray-800 flex items-center">
-              <CiUser className="mr-2 text-blue-500" />
+            <h2 className="text-xl font-semibold text-[#233955] flex items-center">
+              <CiUser className="mr-2 text-[#233955]" />
               Doctor Information
             </h2>
             <div className="relative">
@@ -1807,22 +1806,23 @@ const onSubmit = async (data) => {
                 onFocus={() => setShowDoctorResults(true)}
                 onBlur={() => setTimeout(() => setShowDoctorResults(false), 200)}
                 placeholder="Search doctor by name or specialty"
-                className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-300 focus:border-blue-400"
+                className="w-full pl-10 pr-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-[#a2f2ee] focus:border-[#a2f2ee] transition-colors border-gray-200"
               />
               <input type="hidden" {...register("doctorId", { required: true })} />
               {errors.doctorId && <p className="mt-1 text-sm text-red-600">Doctor is required</p>}
             </div>
+            
             {/* Doctor search results dropdown */}
             {showDoctorResults && filteredDoctors.length > 0 && (
               <div className="mt-1 border border-gray-200 rounded-lg shadow-lg bg-white max-h-60 overflow-y-auto">
                 {filteredDoctors.map((doctor) => (
                   <div
                     key={doctor._id}
-                    className="p-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100"
+                    className="p-3 hover:bg-[#DFF8F9] cursor-pointer border-b border-gray-100"
                     onClick={() => handleDoctorSelect(doctor)}
                   >
-                    <p className="font-medium text-gray-800">{doctor.name}</p>
-                    <p className="text-sm text-gray-500">{doctor.specialization}</p>
+                    <p className="font-medium text-[#233955]">{doctor.name}</p>
+                    <p className="text-sm text-gray-600">{doctor.specialization}</p>
                   </div>
                 ))}
               </div>
@@ -1831,8 +1831,8 @@ const onSubmit = async (data) => {
 
           {/* Patient Selection */}
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-gray-800 flex items-center">
-              <CiUser className="mr-2 text-blue-500" />
+            <h2 className="text-xl font-semibold text-[#233955] flex items-center">
+              <CiUser className="mr-2 text-[#233955]" />
               Patient Information
             </h2>
             <div className="relative">
@@ -1847,22 +1847,23 @@ const onSubmit = async (data) => {
                 onFocus={() => setShowPatientResults(true)}
                 onBlur={() => setTimeout(() => setShowPatientResults(false), 200)}
                 placeholder="Search patient by name or phone"
-                className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-300 focus:border-blue-400"
+                className="w-full pl-10 pr-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-[#a2f2ee] focus:border-[#a2f2ee] transition-colors border-gray-200"
               />
               <input type="hidden" {...register("patientId", { required: true })} />
               {errors.patientId && <p className="mt-1 text-sm text-red-600">Patient is required</p>}
             </div>
+            
             {/* Patient search results dropdown */}
             {showPatientResults && filteredPatients.length > 0 && (
               <div className="mt-1 border border-gray-200 rounded-lg shadow-lg bg-white max-h-60 overflow-y-auto">
                 {filteredPatients.map((patient) => (
                   <div
                     key={patient._id}
-                    className="p-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100"
+                    className="p-3 hover:bg-[#DFF8F9] cursor-pointer border-b border-gray-100"
                     onClick={() => handlePatientSelect(patient)}
                   >
-                    <p className="font-medium text-gray-800">{patient.fullName}</p>
-                    <p className="text-sm text-gray-500">{patient.phone}</p>
+                    <p className="font-medium text-[#233955]">{patient.fullName}</p>
+                    <p className="text-sm text-gray-600">{patient.phone}</p>
                   </div>
                 ))}
               </div>
@@ -1871,13 +1872,13 @@ const onSubmit = async (data) => {
 
           {/* Appointment Schedule */}
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-gray-800 flex items-center">
-              <CiCalendar className="mr-2 text-blue-500" />
+            <h2 className="text-xl font-semibold text-[#233955] flex items-center">
+              <CiCalendar className="mr-2 text-[#233955]" />
               Appointment Schedule
             </h2>
 
             {!selectedDoctor ? (
-              <div className="bg-blue-50 p-4 rounded-lg text-blue-800">
+              <div className="bg-[#DFF8F9] p-4 rounded-xl text-[#233955] border border-[#A2F2EE]">
                 Please select a doctor first to view available schedule
               </div>
             ) : (
@@ -1887,11 +1888,11 @@ const onSubmit = async (data) => {
                   <button
                     type="button"
                     onClick={prevMonth}
-                    className="p-2 rounded-full hover:bg-gray-100"
+                    className="p-2 rounded-full hover:bg-[#DFF8F9]"
                   >
-                    <IoIosArrowBack className="h-5 w-5 text-gray-600" />
+                    <IoIosArrowBack className="h-5 w-5 text-[#233955]" />
                   </button>
-                  <h3 className="text-lg font-medium text-gray-700">
+                  <h3 className="text-lg font-medium text-[#233955]">
                     {currentMonth.toLocaleDateString('en-US', {
                       month: 'long',
                       year: 'numeric'
@@ -1900,9 +1901,9 @@ const onSubmit = async (data) => {
                   <button
                     type="button"
                     onClick={nextMonth}
-                    className="p-2 rounded-full hover:bg-gray-100"
+                    className="p-2 rounded-full hover:bg-[#DFF8F9]"
                   >
-                    <IoIosArrowForward className="h-5 w-5 text-gray-600" />
+                    <IoIosArrowForward className="h-5 w-5 text-[#233955]" />
                   </button>
                 </div>
 
@@ -1921,11 +1922,11 @@ const onSubmit = async (data) => {
                         disabled={!isAvailable}
                         className={`
                           h-12 rounded-lg transition-colors flex flex-col items-center justify-center
-                          ${isSelected ? 'bg-blue-600 text-white' : ''}
+                          ${isSelected ? 'bg-[#233955] text-white' : ''}
                           ${isAvailable && !isSelected
-                            ? 'bg-white text-gray-800 border border-green-400 hover:bg-green-50 cursor-pointer'
+                            ? 'bg-white text-[#233955] border border-[#A2F2EE] hover:bg-[#DFF8F9] cursor-pointer'
                             : 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-50'}
-                          ${isToday && !isSelected ? 'ring-2 ring-blue-400' : ''}
+                          ${isToday && !isSelected ? 'ring-2 ring-[#233955]' : ''}
                         `}
                       >
                         <span className="text-sm font-medium">
@@ -1933,7 +1934,7 @@ const onSubmit = async (data) => {
                         </span>
 
                         {isAvailable && !isSelected && (
-                          <span className="w-2 h-2 mt-1 rounded-full bg-green-500"></span>
+                          <span className="w-2 h-2 mt-1 rounded-full bg-[#A2F2EE]"></span>
                         )}
                       </button>
                     );
@@ -1942,8 +1943,8 @@ const onSubmit = async (data) => {
 
                 {/* Time Slots Selection */}
                 {selectedDate && (
-                  <div className="bg-gray-50 p-4 rounded-lg mt-4">
-                    <h3 className="font-medium text-gray-800 mb-3">
+                  <div className="bg-[#DFF8F9] p-6 rounded-xl border border-[#A2F2EE] mt-4">
+                    <h3 className="font-medium text-[#233955] mb-3">
                       Available time slots for {selectedDate.toLocaleDateString('en-US', {
                         weekday: 'long',
                         month: 'long',
@@ -1953,7 +1954,7 @@ const onSubmit = async (data) => {
                     
                     {loadingSlots ? (
                       <div className="flex justify-center py-4">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#233955]"></div>
                       </div>
                     ) : availableTimeSlots.length > 0 ? (
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -1965,9 +1966,10 @@ const onSubmit = async (data) => {
                             disabled={slot.isBooked}
                             className={`
                               p-2 rounded border text-sm transition-colors
-                              ${watch("timeSlot") === slot.start ? 'bg-blue-600 text-white border-blue-600' : ''}
+                              ${watch("timeSlot") === slot.start ? 
+                                'bg-[#233955] text-white border-[#233955]' : ''}
                               ${!slot.isBooked && watch("timeSlot") !== slot.start 
-                                ? 'bg-white hover:bg-blue-50 border-blue-300' 
+                                ? 'bg-white hover:bg-[#DFF8F9] border-[#A2F2EE]' 
                                 : ''}
                               ${slot.isBooked 
                                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' 
@@ -1983,7 +1985,7 @@ const onSubmit = async (data) => {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-gray-500">No available time slots</p>
+                      <p className="text-gray-600">No available time slots</p>
                     )}
                     <input type="hidden" {...register("date", { required: true })} />
                     <input type="hidden" {...register("timeSlot", { required: true })} />
@@ -1997,8 +1999,8 @@ const onSubmit = async (data) => {
 
           {/* Treatment Details */}
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-gray-800 flex items-center">
-              <CiMedicalCase className="mr-2 text-blue-500" />
+            <h2 className="text-xl font-semibold text-[#233955] flex items-center">
+              <CiMedicalCase className="mr-2 text-[#233955]" />
               Treatment Details
             </h2>
             <div className="relative">
@@ -2007,7 +2009,7 @@ const onSubmit = async (data) => {
                 type="text"
                 {...register("treatment", { required: true })}
                 placeholder="Reason for visit or treatment description"
-                className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-300 focus:border-blue-400"
+                className="w-full pl-10 pr-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-[#a2f2ee] focus:border-[#a2f2ee] transition-colors border-gray-200"
               />
               {errors.treatment && <p className="mt-1 text-sm text-red-600">Treatment description is required</p>}
             </div>
@@ -2017,7 +2019,7 @@ const onSubmit = async (data) => {
           <div className="pt-4">
             <PrimaryButton
               type="submit"
-              className="w-full py-3"
+              className="w-full py-3 bg-[#233955] hover:bg-[#1e3a5f] text-white"
               disabled={isSubmitting || !selectedDoctor || !selectedPatient || !selectedDate || !watch("timeSlot")}
             >
               {isSubmitting ? (
@@ -2035,5 +2037,4 @@ const onSubmit = async (data) => {
     </div>
   );
 };
-
-export default AddAppointment;
+export default AddAppointment ;
