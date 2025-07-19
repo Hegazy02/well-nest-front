@@ -1,12 +1,10 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import PatientsList from "./PatientsList";
+import PatientsList from "./components/PatientsList";
 import PrimaryInput from "../../core/components/PrimaryInput";
 import Pagination from "../../core/components/Pagination";
-import { Link } from 'react-router'; // ✅ التعديل هنا
+import { Link } from 'react-router'; 
 import PrimaryButton from "../../core/components/PrimaryButton";
-import Sidebar from "../../core/components/layout/Sidebar";
-import { FiMenu } from "react-icons/fi";
 
 const Patients = () => {
   const [patients, setPatients] = useState([]);
@@ -53,7 +51,6 @@ const Patients = () => {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar />
 
       <div className="flex-1 p-4">
         <div className="flex items-center justify-between mb-4 md:hidden">
