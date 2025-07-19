@@ -47,38 +47,51 @@ export default function DoctorSchedulePage() {
   }, [selectedDoctor, schedules])
 
   useEffect(() => {
-    const fetchDoctors = async () => {
+    const fetchAllDoctors = async () => {
       try {
-        const res = await apiClient.get(Endpoints.doctors)
-        if (res.data.success) {
-          setDoctors(res.data.data)
+        let page = 1
+        let allDoctors = []
+        let totalPages = 1
+
+        while (page <= totalPages) {
+          const res = await apiClient.get(`${Endpoints.doctors}?page=${page}&limit=10`)
+          const data = res.data.data
+          totalPages = res.data.totalPages
+
+          allDoctors = [...allDoctors, ...data]
+          page++
         }
+
+        setDoctors(allDoctors)
       } catch (err) {
         console.error("Failed to fetch doctors:", err)
+        toast.error("Failed to load doctors list.")
       }
     }
-    fetchDoctors()
+
+    fetchAllDoctors()
   }, [])
 
-const fetchSchedules = async () => {
-  try {
-    setLoading(true)
-    const response = await apiClient.get(Endpoints.calendar)
 
-    if (response.data.success && Array.isArray(response.data.data)) {
-      const schedules = response.data.data
-      setSchedules(schedules)
+  const fetchSchedules = async () => {
+    try {
+      setLoading(true)
+      const response = await apiClient.get(Endpoints.calendar)
 
-    } else {
-      toast.error("Failed to load schedules")
+      if (response.data.success && Array.isArray(response.data.data)) {
+        const schedules = response.data.data
+        setSchedules(schedules)
+
+      } else {
+        toast.error("Failed to load schedules")
+      }
+    } catch (error) {
+      console.error("Error fetching schedules:", error)
+      toast.error("Error connecting to server.")
+    } finally {
+      setLoading(false)
     }
-  } catch (error) {
-    console.error("Error fetching schedules:", error)
-    toast.error("Error connecting to server.")
-  } finally {
-    setLoading(false)
   }
-}
 
 
 
