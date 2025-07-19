@@ -11,7 +11,6 @@ import PrimaryButton from "../../core/components/PrimaryButton";
 import { TbXboxX } from "react-icons/tb";
 import { MdDeleteOutline } from "react-icons/md";
 import { Endpoints } from "../../core/utils/endpoints";
-import imageCompression from 'browser-image-compression';
 
 const AddPatient = () => {
   const { id } = useParams();
@@ -42,7 +41,6 @@ const AddPatient = () => {
     watch,
     reset,
     getValues,
-    setValue,
   } = useForm({
     defaultValues: {
       fullName: "",
@@ -92,24 +90,6 @@ const AddPatient = () => {
   });
 
   const watchedImage = watch("image");
-
-const handleImageChange = async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const options = {
-    maxSizeMB: 0.5,
-    maxWidthOrHeight: 800,
-    useWebWorker: true,
-  };
-
-  try {
-    const compressedFile = await imageCompression(file, options);
-    setValue("image", [compressedFile]); // استخدم setValue هنا
-  } catch (err) {
-    console.error('Error compressing image:', err);
-  }
-};
 
   useEffect(() => {
     const imageValue = getValues("image");
