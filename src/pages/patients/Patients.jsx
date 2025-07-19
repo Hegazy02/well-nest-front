@@ -22,30 +22,25 @@ const Patients = () => {
 
   const { state, refetch } = useQuery(Endpoints.patients, "GET", filters);
 
-  // Fetch data when filters change (debounced)
   useEffect(() => {
     const timer = setTimeout(() => {
       refetch(filters);
     }, 300);
-
     return () => clearTimeout(timer);
   }, [filters]);
 
-  // Fetch visit types
   useEffect(() => {
     const fetchVisitTypes = async () => {
       try {
         const res = await apiClient.get(`${Endpoints.patients}/visit-type`);
         setVisitTypes(res.data.data);
       } catch (err) {
-        toast.error("Failed to load visit types", err);
+        toast.error(`Failed to load visit types: ${err.message}`);
       }
     };
 
     fetchVisitTypes();
   }, []);
-
-  // Handlers
 
   const handleSearchChange = (e) => {
     setFilters((prev) => ({ ...prev, fullName: e.target.value, page: 1 }));
@@ -53,9 +48,7 @@ const Patients = () => {
 
   const handleVisitTypeFilter = (index) => {
     const selectedType = index === 0 ? "" : visitTypes[index - 1];
-    
     setFilters((prev) => ({ ...prev, visitType: selectedType, page: 1 }));
-    console.log("visitType",);
   };
 
   const pageChangeHandler = ({ selected }) => {
@@ -68,27 +61,46 @@ const Patients = () => {
       refetch(filters);
       toast.success("Patient deleted successfully");
     } catch (err) {
-      toast.error("Failed to delete patient", err);
+      toast.error(`Failed to delete patient: ${err.message}`);
     }
   };
 
   const changeVisitType = async (id, newType) => {
+    if (!id || !newType) {
+      toast.error("Patient ID and visit type are required");
+      return;
+    }
+
+    const toastId = toast.loading("Updating visit type...");
+
     try {
       await apiClient.patch(`${Endpoints.patients}/${id}/visit-type`, {
-        status: { visitType: newType },
+        visitType: newType,
       });
-      refetch(filters);
-      toast.success("Visit type updated successfully!");
+
+      await refetch(filters);
+
+      toast.update(toastId, {
+        render: "Visit type updated successfully!",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+      });
     } catch (err) {
-      toast.error("Failed to update visit type", err);
+      toast.update(toastId, {
+        render: err.response?.data?.message || "Failed to update visit type",
+        type: "error",
+        isLoading: false,
+        autoClose: 5000,
+      });
     }
   };
 
   return (
-    <div className="flex min-h-screen">
-      <div className="flex-1 p-4">
-        <header className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6 justify-between">
-          <div className="flex gap-4 flex-wrap">
+    <div className="flex min-h-screen bg-gray-50">
+      <div className="flex-1 p-4 max-w-[1400px] mx-auto">
+        <header className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col sm:flex-row gap-4 w-full">
             <PrimaryInput
               placeholder="Search by name..."
               onChange={handleSearchChange}
@@ -98,26 +110,28 @@ const Patients = () => {
             />
 
             <PrimaryDropDown
-              text={
-                filters.visitType ? filters.visitType : "All Visit Types"
-              }
+              text={filters.visitType ? filters.visitType : "All Visit Types"}
               onSelect={handleVisitTypeFilter}
               className="min-w-[150px]"
             >
               <p>All</p>
               {visitTypes.map((type, index) => (
-                <p key={index} className="whitespace-nowrap">{type}</p>
+                <p key={index} className="whitespace-nowrap">
+                  {type}
+                </p>
               ))}
             </PrimaryDropDown>
 
-            <Link to="/patients/add">
-              <PrimaryButton>Add Patient</PrimaryButton>
+            <Link to="/patients/add" className="sm:ml-auto">
+              <PrimaryButton className="w-full sm:w-auto">
+                Add Patient
+              </PrimaryButton>
             </Link>
           </div>
         </header>
 
         {state.loading ? (
-          <p className="text-center">Loading...</p>
+          <p className="text-center text-gray-500">Loading...</p>
         ) : (
           <>
             <PatientsList
@@ -126,10 +140,12 @@ const Patients = () => {
               changeVisitType={changeVisitType}
               deletePatient={deletePatient}
             />
-            <Pagination
-              totalPages={state.data?.totalPages || 1}
-              pageChangeHandler={pageChangeHandler}
-            />
+            <div className="flex justify-center mt-8">
+              <Pagination
+                totalPages={state.data?.totalPages || 1}
+                pageChangeHandler={pageChangeHandler}
+              />
+            </div>
           </>
         )}
       </div>

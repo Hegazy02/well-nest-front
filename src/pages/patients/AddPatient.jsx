@@ -176,7 +176,6 @@ const AddPatient = () => {
     appendOrEmpty("gender", data.gender);
     appendOrEmpty("maritalStatus", data.maritalStatus);
     appendOrEmpty("visitType", data.visitType);
-
     formData.append("address", JSON.stringify(data.address));
     formData.append(
       "emergencyContacts",
@@ -184,6 +183,7 @@ const AddPatient = () => {
     );
     formData.append("medicalInfo", JSON.stringify(data.medicalInfo));
 
+  
     if (data.image && data.image.length > 0 && data.image[0] instanceof File) {
       formData.append("image", data.image[0]);
     }
@@ -215,7 +215,7 @@ const AddPatient = () => {
   };
 
   const isDisabled = (id) => {
-    return !!id; // لو فيه id يبقى الانبوت مقفول
+    return !!id;
   };
 
   return (
@@ -272,18 +272,14 @@ const AddPatient = () => {
                 )}
               </div>
               <label className="cursor-pointer bg-blue-200 text-blue-950 font-semibold px-4 py-2 rounded-xl hover:bg-blue-100">
-                Upload Image
+                {imagePreview ? "Change Image" : "Upload Image"}
                 <input
                   type="file"
                   accept="image/*"
                   {...register("image")}
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      setImagePreview(URL.createObjectURL(file));
-                    }
-                  }}
                   className="hidden"
+                  
+                  id="image-upload"
                 />
               </label>
             </div>
@@ -294,10 +290,6 @@ const AddPatient = () => {
                 name="fullName"
                 register={register}
                 error={errors.fullName}
-                disabled={isDisabled(id)}
-                className={
-                  isDisabled(id) ? "opacity-70 pointer-events-none" : ""
-                }
               />
               <Input
                 label="National ID"
