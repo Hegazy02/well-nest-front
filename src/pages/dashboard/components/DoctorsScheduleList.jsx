@@ -13,6 +13,8 @@ function getDateRange(days) {
   const to = new Date();
   const from = new Date();
   from.setDate(to.getDate() - (days - 1));
+  console.log("days",days);
+  
   return {
     from: from.toISOString().slice(0, 10),
     to: to.toISOString().slice(0, 10),

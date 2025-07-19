@@ -38,6 +38,7 @@ const DepartmentDetails = () => {
     toast.success("Department deleted successfully");
     navigate(-1);
   };
+  console.log("state", state);
   return (
     <>
       {isLoading && <Loader />}

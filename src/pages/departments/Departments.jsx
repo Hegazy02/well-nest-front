@@ -14,6 +14,7 @@ const Departments = () => {
   const pageChangeHandler = ({ selected: index }) => {
     refetch({ page: index + 1, doctorImages: true });
   };
+
   
   return (
     <>
