@@ -1,28 +1,24 @@
-import React, { useRef, useState, useEffect } from "react";
-import { CiFilter } from "react-icons/ci";
 
-const PrimaryDropDown = ({
-  children,
-  text,
-  onSearch,
-  onSelect,
-  hasIcon = true,
-  className,
-  textClassName,
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
-  const buttonRef = useRef(null);
+import React, { useRef, useState, useEffect } from "react"
+import { CiFilter } from "react-icons/ci"
+
+const PrimaryDropDown = ({ children, text, onSearch, onSelect, hasIcon = true, className, textClassName }) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useRef(null)
+  const buttonRef = useRef(null)
+
   function toggleDropdown() {
-    setIsOpen((isOpen) => !isOpen);
+    setIsOpen((isOpen) => !isOpen)
   }
+
   const searchHandler = (e) => {
-    onSearch(e);
-  };
+    onSearch(e)
+  }
+
   const selectHandler = (index) => {
-    onSelect(index);
-    toggleDropdown();
-  };
+    onSelect(index)
+    toggleDropdown()
+  }
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -32,15 +28,16 @@ const PrimaryDropDown = ({
         buttonRef.current &&
         !buttonRef.current.contains(event.target)
       ) {
-        setIsOpen(false);
+        setIsOpen(false)
       }
-    };
+    }
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside)
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
+
   return (
     <>
       <div className={className}>
@@ -49,14 +46,11 @@ const PrimaryDropDown = ({
             ref={buttonRef}
             onClick={toggleDropdown}
             id="dropdown-button"
-            className="inline-flex items-center justify-between w-full  px-2 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none cursor-pointer "
+            type="button" // Added type="button" here
+            className="inline-flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none cursor-pointer "
           >
-            {hasIcon && (
-              <CiFilter className="text-lg text-[#87888A]" strokeWidth={1} />
-            )}
-            <span className={"mx-2 text-[#87888A] " + textClassName}>
-              {text}
-            </span>
+            {hasIcon && <CiFilter className="text-lg text-[#87888A]" strokeWidth={1} />}
+            <span className={"mx-2 text-[#87888A] " + textClassName}>{text}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="w-5 h-5 ml-2 -mr-1"
@@ -74,35 +68,32 @@ const PrimaryDropDown = ({
           <div
             ref={dropdownRef}
             id="dropdown-menu"
-            className={`${isOpen ? "" : "hidden"
-              } absolute z-10 left-0 mt-1 rounded-md shadow-lg bg-white ring-1 ring-gray-300 ring-opacity-5 p-1 space-y-1 min-w-[220px] max-h-[300px] overflow-y-auto`}
+            className={`${
+              isOpen ? "" : "hidden"
+            } absolute z-10 left-0 mt-1 rounded-md shadow-lg bg-white ring-1 ring-gray-300 ring-opacity-5 p-1 space-y-1 min-w-[220px] max-h-[300px] overflow-y-auto`}
           >
-
             {onSearch && (
               <input
                 onInput={searchHandler}
                 id="search-input"
-                className="block w-full px-4 py-2 text-gray-800 border rounded-md  border-gray-300 focus:outline-none"
+                className="block w-full px-4 py-2 text-gray-800 border rounded-md border-gray-300 focus:outline-none"
                 type="text"
                 placeholder="Search items"
                 autoComplete="off"
               />
             )}
             {React.Children.map(children, (child, index) => {
-              if (!React.isValidElement(child)) return null;
-
+              if (!React.isValidElement(child)) return null
               return React.cloneElement(child, {
-                className:
-                  (child.props.className || "") +
-                  " cursor-pointer hover:bg-gray-100 p-2",
+                className: (child.props.className || "") + " cursor-pointer hover:bg-gray-100 p-2",
                 onClick: () => selectHandler(index),
-              });
+              })
             })}
           </div>
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default PrimaryDropDown;
+export default PrimaryDropDown

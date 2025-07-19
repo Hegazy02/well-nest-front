@@ -6,7 +6,8 @@ import { convertScheduleToEvents } from "../../core/utils/ScheduleUtils"
 import { apiClient } from "../../core/utils/apiClient"
 import { Endpoints } from "../../core/utils/endpoints"
 import { useForm } from "react-hook-form"
-import { format } from "date-fns" 
+import { format } from "date-fns"
+
 
 import HeaderAndFilters from "./Components/HeaderAndFilters"
 import CalendarSection from "./Components/CalendarSection"
@@ -19,7 +20,7 @@ export default function DoctorSchedulePage() {
   const [filteredSchedules, setFilteredSchedules] = useState([])
   const [selectedDoctor, setSelectedDoctor] = useState("all")
   const [loading, setLoading] = useState(true)
-  const [view, setView] = useState("dayGridMonth") 
+  const [view, setView] = useState("dayGridMonth")
   const [date, setDate] = useState(new Date())
   const [showForm, setShowForm] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
@@ -28,9 +29,10 @@ export default function DoctorSchedulePage() {
   const [isInitialLoad, setIsInitialLoad] = useState(true)
   const [showMoreEventsModal, setShowMoreEventsModal] = useState(false)
   const [moreEventsData, setMoreEventsData] = useState([])
-  const { register, handleSubmit, reset, setValue, watch } = useForm()
-  const calendarRef = useRef(null) 
-  const [searchTerm, setSearchTerm] = useState("") 
+  const calendarRef = useRef(null)
+  const [searchTerm, setSearchTerm] = useState("")
+  const { register, handleSubmit, reset, setValue, watch, control } = useForm()
+
 
   useEffect(() => {
     fetchSchedules()
@@ -45,31 +47,41 @@ export default function DoctorSchedulePage() {
   }, [selectedDoctor, schedules])
 
   useEffect(() => {
-    const fetchDoctors = async () => {
+    const fetchAllDoctors = async () => {
       try {
-        const res = await apiClient.get(Endpoints.doctors)
-        if (res.data.success) {
-          setDoctors(res.data.data)
+        let page = 1
+        let allDoctors = []
+        let totalPages = 1
+
+        while (page <= totalPages) {
+          const res = await apiClient.get(`${Endpoints.doctors}?page=${page}&limit=10`)
+          const data = res.data.data
+          totalPages = res.data.totalPages
+
+          allDoctors = [...allDoctors, ...data]
+          page++
         }
+
+        setDoctors(allDoctors)
       } catch (err) {
         console.error("Failed to fetch doctors:", err)
+        toast.error("Failed to load doctors list.")
       }
     }
-    fetchDoctors()
+
+    fetchAllDoctors()
   }, [])
+
 
   const fetchSchedules = async () => {
     try {
       setLoading(true)
       const response = await apiClient.get(Endpoints.calendar)
-      if (response.data.success) {
-        setSchedules(response.data.data)
-        if (isInitialLoad) {
-          toast.success("Schedules loaded successfully!", {
-            toastId: "scheduleLoaded",
-          })
-          setIsInitialLoad(false)
-        }
+
+      if (response.data.success && Array.isArray(response.data.data)) {
+        const schedules = response.data.data
+        setSchedules(schedules)
+
       } else {
         toast.error("Failed to load schedules")
       }
@@ -80,6 +92,8 @@ export default function DoctorSchedulePage() {
       setLoading(false)
     }
   }
+
+
 
   const events = convertScheduleToEvents(filteredSchedules)
 
@@ -97,7 +111,6 @@ export default function DoctorSchedulePage() {
       const to = data.to
       const doctorId = data.doctorId
 
-      console.log("Form Data:", { repeat, selectedDay, from, to, doctorId })
 
       const response = await apiClient.post(Endpoints.calendar, {
         doctorId,
@@ -108,11 +121,12 @@ export default function DoctorSchedulePage() {
         repeat: repeat,
       })
 
-      console.log("Backend Response:", response.data)
       toast.success(`Schedules added/updated successfully!`)
 
       reset()
       setShowForm(false)
+      setIsEditing(false)
+      setSelectedEvent(null)
       fetchSchedules()
     } catch (err) {
       console.error("Error details:", err.response?.data || err.message)
@@ -121,8 +135,26 @@ export default function DoctorSchedulePage() {
   }
 
   const handleEventDetailsEdit = () => {
-    setIsEditing(true)
+    if (selectedEvent) {
+      setShowForm(false)
+      setTimeout(() => {
+        setIsEditing(true)
+      }, 0)
+    }
   }
+
+
+  useEffect(() => {
+    if (selectedEvent && isEditing) {
+      const doctor = doctors.find((doc) => doc.name === selectedEvent.doctorName)
+      if (doctor) {
+        setValue("doctorId", doctor._id)
+        setValue("day", format(selectedEvent.start, "EEEE"))
+        setValue("from", format(selectedEvent.start, "HH:mm"))
+        setValue("to", format(selectedEvent.end, "HH:mm"))
+      }
+    }
+  }, [selectedEvent, isEditing, doctors])
 
   const handleEventDetailsDeleteThis = async () => {
     try {
@@ -148,15 +180,7 @@ export default function DoctorSchedulePage() {
     }
   }
 
-  useEffect(() => {
-    if (isEditing && selectedEvent) {
-      const doctor = doctors.find((doc) => doc.name === selectedEvent.doctorName)
-      setValue("doctorId", doctor?._id || "")
-      setValue("day", format(selectedEvent.start, "EEEE"))
-      setValue("from", format(selectedEvent.start, "HH:mm"))
-      setValue("to", format(selectedEvent.end, "HH:mm"))
-    }
-  }, [isEditing, selectedEvent, doctors, setValue])
+
 
   const uniqueDoctors = Array.from(new Set(schedules.map((s) => s.doctorName)))
   const filteredDoctorList = useMemo(() => {
@@ -192,15 +216,22 @@ export default function DoctorSchedulePage() {
         />
       </div>
 
-      <AddScheduleModal
-        showForm={showForm}
-        onClose={() => setShowForm(false)}
-        onSubmit={handleAddScheduleSubmit}
-        doctors={doctors}
-        register={register}
-        handleSubmit={handleSubmit}
-        watch={watch}
-      />
+      {(showForm || isEditing) && (
+        <AddScheduleModal
+          showForm={showForm || isEditing}
+          onClose={() => {
+            setShowForm(false)
+            setIsEditing(false)
+            setSelectedEvent(null)
+          }}
+          onSubmit={handleAddScheduleSubmit}
+          doctors={doctors}
+          register={register}
+          handleSubmit={handleSubmit}
+          watch={watch}
+          control={control}
+        />
+      )}
 
       <EventDetailsModal
         selectedEvent={selectedEvent}
