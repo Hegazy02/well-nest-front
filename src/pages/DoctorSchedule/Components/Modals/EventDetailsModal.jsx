@@ -32,7 +32,7 @@ const EventDetailsModal = ({ selectedEvent, isEditing, onClose, onEdit, onDelete
           {/* Edit Button */}
           <button
             onClick={onEdit}
-            className="px-4 py-2 text-sm min-w-[180px] bg-[#233955] hover:bg-[#1b2e44] text-white rounded-lg"
+            className="px-4 py-2 text-sm min-w-[180px] bg-[#233955] hover:bg-[#1b2e44] text-white rounded-lg cursor-pointer"
           >
             Edit Schedule
           </button>
@@ -46,7 +46,7 @@ const EventDetailsModal = ({ selectedEvent, isEditing, onClose, onEdit, onDelete
             onConfirm={onDeleteThis}
             onCancel={onClose}
           >
-            <button className="px-4 py-2 text-sm min-w-[180px] bg-red-600 hover:bg-red-700 text-white rounded-lg">
+            <button className="px-4 py-2 text-sm min-w-[180px] bg-red-600 hover:bg-red-700 text-white rounded-lg cursor-pointer">
               Delete This Schedule Only
             </button>
           </PrimaryModal>
@@ -59,7 +59,7 @@ const EventDetailsModal = ({ selectedEvent, isEditing, onClose, onEdit, onDelete
             onConfirm={onDeleteAll}
             onCancel={onClose}
           >
-            <button className="px-4 py-2 text-sm min-w-[180px] bg-red-800 hover:bg-red-900 text-white rounded-lg">
+            <button className="px-4 py-2 text-sm min-w-[180px] bg-red-800 hover:bg-red-900 text-white rounded-lg cursor-pointer">
               Delete All Schedules
             </button>
           </PrimaryModal>

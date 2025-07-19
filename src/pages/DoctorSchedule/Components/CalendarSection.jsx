@@ -3,7 +3,7 @@ import FullCalendar from "@fullcalendar/react"
 import dayGridPlugin from "@fullcalendar/daygrid"
 import timeGridPlugin from "@fullcalendar/timegrid"
 import interactionPlugin from "@fullcalendar/interaction"
-import LoadingSpinner from "../../../core/components/LoadingSpinner"
+import Loader from "../../../core/components/Loader"
 import { format } from "date-fns"
 import { getDoctorColor } from "../../../core/utils/ScheduleUtils"
 const CalendarSection = ({
@@ -19,7 +19,7 @@ const CalendarSection = ({
 }) => {
   const renderEventContent = (eventInfo) => {
     const event = eventInfo.event
-    const backgroundColor = getDoctorColor(event.extendedProps.doctorName || event.title) // Use extendedProps or title
+    const backgroundColor = getDoctorColor(event.extendedProps.doctorName || event.title)
     return (
       <div
         className="h-full flex flex-col justify-center overflow-hidden p-1 rounded-md cursor-pointer"
@@ -43,14 +43,14 @@ const CalendarSection = ({
         eventDate.getDate() === date.getDate()
       )
     })
-    const displayedEvents = allEventsForDay.slice(0, 3) 
+    const displayedEvents = allEventsForDay.slice(0, 3)
     const moreCount = allEventsForDay.length - displayedEvents.length
     return (
       <div className="fc-daygrid-day-frame fc-scrollgrid-sync-inner flex flex-col h-full p-1 gap-1">
         <div className="fc-daygrid-day-top">
-          <a className="fc-daygrid-day-number">{dayRenderInfo.dayNumberText}</a>
+          <span className="fc-daygrid-day-number">{dayRenderInfo.dayNumberText}</span>
         </div>
-        
+
         <div className="flex flex-col gap-1">
           {displayedEvents.map((event) => (
             <button
@@ -90,8 +90,11 @@ const CalendarSection = ({
   return (
     <div className="flex-1 overflow-auto p-4">
       {loading ? (
-        <LoadingSpinner />
+        <div className="flex items-center justify-center h-[400px]">
+          <Loader />
+        </div>
       ) : (
+
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 min-h-[900px]">
           <FullCalendar
             ref={calendarRef}
@@ -128,7 +131,7 @@ const CalendarSection = ({
             eventDidMount={(info) => {
               if (info.el) {
                 info.el.style.cursor = "pointer"
-                info.el.classList.add("hover:shadow-md") 
+                info.el.classList.add("hover:shadow-md")
               }
             }}
             dateClick={(info) => {
@@ -140,7 +143,7 @@ const CalendarSection = ({
               else if (dateInfo.view.type === "timeGridDay") setView("timeGridDay")
               setDate(dateInfo.view.calendar.getDate())
             }}
-            dayCellContent={renderDayCellContent} 
+            dayCellContent={renderDayCellContent}
             moreLinkClick={(info) => {
               console.log("More link clicked! Info:", info)
               info.jsEvent.preventDefault()
@@ -160,13 +163,13 @@ const CalendarSection = ({
               setMoreEventsData(allDayEvents)
               setShowMoreEventsModal(true)
 
-              return false 
+              return false
             }}
             moreLinkDidMount={(info) => {
               const fcPopover = document.querySelector(".fc-more-popover")
               if (fcPopover) {
                 console.log("Found FullCalendar popover via moreLinkDidMount, attempting to remove it.")
-                fcPopover.remove() 
+                fcPopover.remove()
               }
             }}
             height="auto"
