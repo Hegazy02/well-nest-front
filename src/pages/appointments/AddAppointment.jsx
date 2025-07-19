@@ -1732,6 +1732,7 @@ const appointmentData = {
   patient: data.patientId, // بدل patientId
   date: `${data.date}T${data.timeSlot}:00`,
   treatment: data.treatment,
+  time: data.timeSlot
 };
 
     const res = await apiClient.post(
