@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { getPatientDepartmentStatistics } from "../../../core/api/departmentsApi";
 import PrimaryDropDown from "../../../core/components/PrimaryDropDown";
+import Loader from "../../../core/components/Loader";
+import Skeleton from "react-loading-skeleton";
 
 const COLORS = ["#1a237e", "#4dd0e1", "#b2ebf2", "#e0e0e0"];
 const ranges = [
@@ -55,11 +57,7 @@ const PatientDepartmentDonutChart = ({ className }) => {
         </div>
       </div>
       <div className="flex flex-col items-center justify-center">
-        {loading ? (
-          <div className="h-[200px] flex items-center justify-center text-gray-400">
-            Loading...
-          </div>
-        ) : error ? (
+        {error ? (
           <div className="h-[200px] flex items-center justify-center text-red-400">
             {error}
           </div>

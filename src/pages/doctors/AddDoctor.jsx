@@ -89,6 +89,8 @@ const AddDoctor = () => {
             to: formatDateForInput(exp.to),
           })
         );
+        console.log("deep", response.data.data.department);
+
         const data = {
           name: response.data.data.name,
           appointmentDuration: response.data.data.appointmentDuration,
@@ -208,8 +210,12 @@ const AddDoctor = () => {
           } else {
             formDataToSend.append("image", data.image);
           }
-        } else if (key != "email") {
-          formDataToSend.append(key, data[key]);
+        } else {
+          if (id && key != "email") {
+            formDataToSend.append(key, data[key]);
+          } else if (!id) {
+            formDataToSend.append(key, data[key]);
+          }
         }
       });
 
@@ -244,6 +250,28 @@ const AddDoctor = () => {
         )}
         <input
           type={type}
+          onKeyDown={(e) => {
+            // Allow control keys: backspace, delete, tab, escape, enter, arrows
+            if (
+              [
+                "Backspace",
+                "Delete",
+                "Tab",
+                "Escape",
+                "Enter",
+                "ArrowLeft",
+                "ArrowRight",
+              ].includes(e.key) ||
+              (e.ctrlKey && ["a", "c", "v", "x"].includes(e.key.toLowerCase()))
+            ) {
+              return;
+            }
+
+            // Block non-numeric keys
+            if (type === "tel" && !/^\d$/.test(e.key)) {
+              e.preventDefault();
+            }
+          }}
           {...register(name, {
             required: required ? `${label} is required` : false,
             ...(type === "email" && {

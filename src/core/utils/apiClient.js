@@ -48,20 +48,26 @@ apiClient.interceptors.response.use(
   },
   async function (error) {
     const originalRequest = error.config;
-    if (error.response.status === 403 && !originalRequest._retry) {
+
+    if (
+      error.response &&
+      error.response.status === 403 &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true;
 
       const resp = await refreshToken();
-      console.log("############ REFRESH TOKEN RESPONSE ACCESS Token", resp);
 
-      const access_token = resp.response.token;
+      // تأكد إن الـ resp موجود وفيه response
+      const access_token = resp?.response?.token;
 
-      addTokenToLocalStorage(access_token);
-      apiClient.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${access_token}`;
-      return apiClient(originalRequest);
+      if (access_token) {
+        addTokenToLocalStorage(access_token);
+        apiClient.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
+        return apiClient(originalRequest);
+      }
     }
+
     return Promise.reject(error);
   }
 );
