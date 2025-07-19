@@ -10,3 +10,12 @@
 //   },
 //   plugins: [],
 // };
+module.exports = {
+  theme: {
+    extend: {
+      cursor: {
+        pointer: 'pointer',
+      },
+    },
+  },
+}

@@ -1,4 +1,3 @@
-import React from "react";
 import AppointmentCardList from "./components/AppointmentCardList";
 import PatientOverviewChart from "./components/PatientOverviewChart";
 import PatientDepartmentDonutChart from "./components/PatientDepartmentDonutChart";
@@ -9,10 +8,9 @@ const Dashboard = () => {
     <div className="flex flex-col gap-4">
       <AppointmentCardList />
       <PatientOverviewChart />
-
       <div className="flex gap-4">
-        <PatientDepartmentDonutChart className="flex-grow"/>
-        <DoctorsScheduleList  className="flex-grow"/>
+        <PatientDepartmentDonutChart className="flex-grow" />
+        <DoctorsScheduleList className="flex-grow" />
       </div>
     </div>
   );

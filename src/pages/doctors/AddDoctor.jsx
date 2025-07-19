@@ -89,6 +89,8 @@ const AddDoctor = () => {
             to: formatDateForInput(exp.to),
           })
         );
+        console.log("deep", response.data.data.department);
+
         const data = {
           name: response.data.data.name,
           appointmentDuration: response.data.data.appointmentDuration,
@@ -208,8 +210,12 @@ const AddDoctor = () => {
           } else {
             formDataToSend.append("image", data.image);
           }
-        } else if (key != "email") {
-          formDataToSend.append(key, data[key]);
+        } else {
+          if (id && key != "email") {
+            formDataToSend.append(key, data[key]);
+          } else if (!id) {
+            formDataToSend.append(key, data[key]);
+          }
         }
       });
 
@@ -244,6 +250,28 @@ const AddDoctor = () => {
         )}
         <input
           type={type}
+          onKeyDown={(e) => {
+            // Allow control keys: backspace, delete, tab, escape, enter, arrows
+            if (
+              [
+                "Backspace",
+                "Delete",
+                "Tab",
+                "Escape",
+                "Enter",
+                "ArrowLeft",
+                "ArrowRight",
+              ].includes(e.key) ||
+              (e.ctrlKey && ["a", "c", "v", "x"].includes(e.key.toLowerCase()))
+            ) {
+              return;
+            }
+
+            // Block non-numeric keys
+            if (type === "tel" && !/^\d$/.test(e.key)) {
+              e.preventDefault();
+            }
+          }}
           {...register(name, {
             required: required ? `${label} is required` : false,
             ...(type === "email" && {
@@ -292,9 +320,9 @@ const AddDoctor = () => {
         <div className="bg-white overflow-hidden rounded-[8px]">
           {/* Header */}
           <div className="flex items-center gap-4 bg-[#f3f4f6] px-8 py-6 border-b border-gray-200">
-            <Link to="/doctors">
+            {/* <Link to="/doctors">
               <IoIosArrowBack className="h-5 w-5 text-[#233955]" />
-            </Link>
+            </Link> */}
             <div className="flex items-center space-x-3">
               <div className="p-3 bg-white rounded-xl shadow-sm">
                 <CiUser className="h-8 w-8 text-[#233955]" />

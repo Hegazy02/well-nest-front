@@ -11,6 +11,8 @@ import {
 } from "recharts";
 import { getAppointmenstPatientsAgeStatistics } from "../../../core/api/patientsApi";
 import PrimaryDropDown from "../../../core/components/PrimaryDropDown";
+import Loader from "../../../core/components/Loader";
+import Skeleton from "react-loading-skeleton";
 
 const AGE_COLORS = {
   child: "#1a237e",
@@ -126,18 +128,14 @@ const PatientOverviewChart = () => {
           Elderly
         </div>
       </div>
-      {loading ? (
-        <div className="h-[260px] flex items-center justify-center text-gray-400">
-          Loading...
-        </div>
-      ) : error ? (
+      {error ? (
         <div className="h-[260px] flex items-center justify-center text-red-400">
           {error}
         </div>
       ) : (
         <ResponsiveContainer width="100%" height={260}>
           {chartData.length == 0 ? (
-            <p>No Data</p>
+            <Skeleton height={260} />
           ) : (
             <BarChart data={chartData} barGap={4} barCategoryGap={16}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />

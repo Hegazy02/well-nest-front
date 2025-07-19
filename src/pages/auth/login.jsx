@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { Endpoints } from "../../core/utils/endpoints";
 import { useAuth } from "../../core/context/AuthContext";
 import PrimaryButton from "../../core/components/PrimaryButton";
-import PrimaryInput from "../../core/components/PrimaryInput";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -20,12 +18,9 @@ const LoginPage = () => {
 
     try {
       await login({ email, password });
-      // console.log("user", user);
-      
       navigate("/");
     } catch (err) {
       setError(err.message);
-      console.log("error", err);
     } finally {
       setIsLoading(false);
     }
