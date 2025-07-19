@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import PatientsList from "./components/PatientsList";
 import PrimaryInput from "../../core/components/PrimaryInput";
 import Pagination from "../../core/components/Pagination";
-import { Link } from "react-router";
+import { Link } from "react-router"; 
 import { apiClient } from "../../core/utils/apiClient";
 import PrimaryButton from "../../core/components/PrimaryButton";
 import PrimaryDropDown from "../../core/components/PrimaryDropDown";
@@ -22,6 +22,7 @@ const Patients = () => {
 
   const { state, refetch } = useQuery(Endpoints.patients, "GET", filters);
 
+  // Debounced refetch
   useEffect(() => {
     const timer = setTimeout(() => {
       refetch(filters);
@@ -36,7 +37,7 @@ const Patients = () => {
         const res = await apiClient.get(`${Endpoints.patients}/visit-type`);
         setVisitTypes(res.data.data);
       } catch (err) {
-        toast.error("Failed to load visit types", err);
+        toast.error(`Failed to load visit types: ${err.message}`);
       }
     };
 
@@ -44,14 +45,12 @@ const Patients = () => {
   }, []);
 
   // Handlers
-
   const handleSearchChange = (e) => {
     setFilters((prev) => ({ ...prev, fullName: e.target.value, page: 1 }));
   };
 
   const handleVisitTypeFilter = (index) => {
     const selectedType = index === 0 ? "" : visitTypes[index - 1];
-    
     setFilters((prev) => ({ ...prev, visitType: selectedType, page: 1 }));
   };
 
@@ -65,19 +64,38 @@ const Patients = () => {
       refetch(filters);
       toast.success("Patient deleted successfully");
     } catch (err) {
-      toast.error("Failed to delete patient", err);
+      toast.error(`Failed to delete patient: ${err.message}`);
     }
   };
 
   const changeVisitType = async (id, newType) => {
+    if (!id || !newType) {
+      toast.error("Patient ID and visit type are required");
+      return;
+    }
+
+    const toastId = toast.loading("Updating visit type...");
+
     try {
       await apiClient.patch(`${Endpoints.patients}/${id}/visit-type`, {
-        visitType: { visitType: newType },
-      });      
-      refetch(filters);
-      toast.success("Visit type updated successfully!");
+        visitType: newType,
+      });
+
+      await refetch(filters);
+
+      toast.update(toastId, {
+        render: "Visit type updated successfully!",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+      });
     } catch (err) {
-      toast.error("Failed to update visit type", err);
+      toast.update(toastId, {
+        render: err.response?.data?.message || "Failed to update visit type",
+        type: "error",
+        isLoading: false,
+        autoClose: 5000,
+      });
     }
   };
 
@@ -95,15 +113,15 @@ const Patients = () => {
             />
 
             <PrimaryDropDown
-              text={
-                filters.visitType ? filters.visitType : "All Visit Types"
-              }
+              text={filters.visitType ? filters.visitType : "All Visit Types"}
               onSelect={handleVisitTypeFilter}
               className="min-w-[150px]"
             >
               <p>All</p>
               {visitTypes.map((type, index) => (
-                <p key={index} className="whitespace-nowrap">{type}</p>
+                <p key={index} className="whitespace-nowrap">
+                  {type}
+                </p>
               ))}
             </PrimaryDropDown>
 

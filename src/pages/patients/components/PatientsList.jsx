@@ -90,22 +90,46 @@ const getVisitTypeColor = (visitType) => {
           <div>{patient.medicalInfoId?.bloodType || "N/A"}</div>
 
           {/* Visit Type */}
-          <PrimaryDropDown
-            text={patient.visitTypeId?.visitType || "N/A"}
-            onSelect={(index) => {
-              const selectedVisitType = visitTypes[index];
-              changeVisitType(patient._id, selectedVisitType);
-            }}
-            hasIcon={false}
-            className="flex-1 w-37"
-            textClassName={`border px-2 p-1 rounded-lg w-full ${getVisitTypeColor(
-              patient.visitTypeId?.visitType
-            )}`}
-          >
-            {visitTypes.map((type) => (
-              <p key={type}>{type}</p>
-            ))}
-          </PrimaryDropDown>
+          <div className="relative">
+            <PrimaryDropDown
+              text={patient.visitTypeId?.visitType || "Select Type"}
+              onSelect={(index) => {
+                if (index >= 0 && index < visitTypes.length) {
+                  const selectedVisitType = visitTypes[index];
+                  // Prevent updating if the type is the same
+                  if (selectedVisitType !== patient.visitTypeId?.visitType) {
+                    changeVisitType(patient._id, selectedVisitType);
+                  }
+                }
+              }}
+              hasIcon={false}
+              className="flex-1 w-37 min-w-[120px]"
+              textClassName={`border px-2 p-1 rounded-lg w-full ${getVisitTypeColor(
+                patient.visitTypeId?.visitType
+              )} ${!patient.visitTypeId?.visitType ? 'text-gray-500' : ''}`}
+              disabled={!visitTypes.length}
+            >
+              {visitTypes.length > 0 ? (
+                visitTypes.map((type) => (
+                  <div 
+                    key={type}
+                    className={`p-2 hover:bg-gray-100 cursor-pointer ${
+                      patient.visitTypeId?.visitType === type ? 'bg-blue-50 font-medium' : ''
+                    }`}
+                  >
+                    {type}
+                  </div>
+                ))
+              ) : (
+                <div className="p-2 text-gray-500">No visit types available</div>
+              )}
+            </PrimaryDropDown>
+            {!patient.visitTypeId?.visitType && (
+              <span className="absolute inset-0 flex items-center justify-center text-xs text-red-500 pointer-events-none">
+                Select Type
+              </span>
+            )}
+          </div>
 
           {/* Actions */}
           <div className="flex gap-4 text-lg text-[#4B4D4F]">
