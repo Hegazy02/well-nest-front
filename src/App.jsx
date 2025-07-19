@@ -13,6 +13,8 @@ import DepartmentDetails from "./pages/departments/DepartmentDetails";
 import DepartmentForm from "./pages/departments/DepartmentForm";
 import Patients from "./pages/patients/Patients";
 import PatientDetails from "./pages/patients/PatientDetails";
+ import Appointments from "./pages/appointments/Appointments";
+ import AddAppointment from "./pages/appointments/AddAppointment";
 import "./index.css";
 import AddPatient from "./pages/patients/AddPatient";
 import Sidebar from "./core/components/layout/Sidebar";
@@ -147,12 +149,20 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-                   <Route
-                path="/calendar"
+                  <Route
+                path="/appointments"
                 element={
-                  <ProtectedRoute role={"Admin"}>
-                    <DoctorSchedule/>
-                  </ProtectedRoute>
+                  // <ProtectedRoute role={"Admin"}>
+                    <Appointments />
+                  // </ProtectedRoute>
+                }
+              />
+                  <Route
+                path="/appointments/add"
+                element={
+                  // <ProtectedRoute role={"Admin"}>
+                    <AddAppointment/>
+                  // </ProtectedRoute>
                 }
               />
             </Routes>
