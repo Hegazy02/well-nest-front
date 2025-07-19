@@ -7,6 +7,7 @@ import Skeleton from "react-loading-skeleton";
 
 const COLORS = ["#1a237e", "#4dd0e1", "#b2ebf2", "#e0e0e0"];
 const ranges = [
+  { label: "Today", value: 1 },
   { label: "This Week", value: 7 },
   { label: "Last 14 Days", value: 14 },
   { label: "Last 30 Days", value: 30 },
@@ -55,6 +56,16 @@ const PatientDepartmentDonutChart = ({ className }) => {
           <div className="font-bold text-xl">Today's Appointments Overview</div>
           <div className="text-gray-400 text-sm">by Departments</div>
         </div>
+        <PrimaryDropDown
+          text={range.label}
+          onSelect={(i) => setRange(ranges[i])}
+        >
+          {ranges.map((r) => (
+            <option key={r.value} value={r.value}>
+              {r.label}
+            </option>
+          ))}
+        </PrimaryDropDown>
       </div>
       <div className="flex flex-col items-center justify-center">
         {error ? (
