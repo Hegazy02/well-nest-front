@@ -13,15 +13,17 @@ import DepartmentDetails from "./pages/departments/DepartmentDetails";
 import DepartmentForm from "./pages/departments/DepartmentForm";
 import Patients from "./pages/patients/Patients";
 import PatientDetails from "./pages/patients/PatientDetails";
+import Appointments from "./pages/appointments/Appointments";
+import AddAppointment from "./pages/appointments/AddAppointment";
 import "./index.css";
 import AddPatient from "./pages/patients/AddPatient";
 import Sidebar from "./core/components/layout/Sidebar";
 import DoctorDetails from "./pages/doctors/Doctor-details/DoctorDetails";
 
-
 import Header from "./core/components/layout/Header";
 import { useState } from "react";
-import 'react-loading-skeleton/dist/skeleton.css';
+import "react-loading-skeleton/dist/skeleton.css";
+import DoctorSchedulePage from "./pages/DoctorSchedule/DoctorSchedule";
 
 function App() {
   const location = useLocation();
@@ -35,7 +37,7 @@ function App() {
     <>
       <AuthProvider>
         <div className="flex gap-4">
-          {!shouldHideSidebar  && (
+          {!shouldHideSidebar && (
             <Sidebar onClick={(value) => setTitle(value)} />
           )}
           <div className="flex-grow mr-4 relative">
@@ -92,6 +94,14 @@ function App() {
                 }
               />
               <Route
+                path="/calendar"
+                element={
+                  <ProtectedRoute role={"Admin"}>
+                    <DoctorSchedulePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/doctors/add"
                 element={
                   <ProtectedRoute role={"Admin"}>
@@ -107,15 +117,15 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-                <Route
-            path="/doctors/:id"
-            element={
-              <ProtectedRoute role={"Admin"}>
-                <DoctorDetails/>
-              </ProtectedRoute>
-            }
-          />
-          <Route
+              <Route
+                path="/doctors/:id"
+                element={
+                  <ProtectedRoute role={"Admin"}>
+                    <DoctorDetails />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/departments"
                 element={
                   <ProtectedRoute role={"Admin"}>
@@ -147,12 +157,20 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-                   <Route
-                path="/calendar"
+              <Route
+                path="/appointments"
                 element={
-                  <ProtectedRoute role={"Admin"}>
-                    <DoctorSchedule/>
-                  </ProtectedRoute>
+                  // <ProtectedRoute role={"Admin"}>
+                  <Appointments />
+                  // </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/appointments/add"
+                element={
+                  // <ProtectedRoute role={"Admin"}>
+                  <AddAppointment />
+                  // </ProtectedRoute>
                 }
               />
             </Routes>

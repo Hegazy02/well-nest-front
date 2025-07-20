@@ -13,7 +13,6 @@ import { Endpoints } from "../../core/utils/endpoints";
 const Patients = () => {
   const searchRef = useRef(null);
   const [visitTypes, setVisitTypes] = useState([]);
-
   const [filters, setFilters] = useState({
     fullName: "",
     visitType: "",
@@ -38,7 +37,6 @@ const Patients = () => {
         toast.error(`Failed to load visit types: ${err.message}`);
       }
     };
-
     fetchVisitTypes();
   }, []);
 
@@ -72,7 +70,7 @@ const Patients = () => {
     }
 
     const toastId = toast.loading("Updating visit type...");
-
+    
     try {
       await apiClient.patch(`${Endpoints.patients}/${id}/visit-type`, {
         visitType: newType,
@@ -87,6 +85,7 @@ const Patients = () => {
         autoClose: 3000,
       });
     } catch (err) {
+      console.log(visitTypes);
       toast.update(toastId, {
         render: err.response?.data?.message || "Failed to update visit type",
         type: "error",

@@ -3,13 +3,12 @@ import { useState, useEffect, useMemo } from "react"
 import { useParams } from "react-router-dom"
 import { Endpoints } from "../../../core/utils/endpoints"
 import { apiClient } from "../../../core/utils/apiClient"
-import LoadingSpinner from "../../../core/components/LoadingSpinner" 
-
 import DoctorProfileCard from "./Components/DoctorProfileCard"
 import StatsCards from "./Components/StatsCards"
 import AppointmentChart from "./Components/AppointmentChart"
 import ScheduleAndAppointments from "./Components/ScheduleAndAppointments"
 import ErrorComponent from "../../../core/components/ErrorComponent"
+import Loader from "../../../core/components/Loader"
 
 export default function DoctorDetails() {
   const [doctor, setDoctor] = useState(null)
@@ -233,7 +232,7 @@ export default function DoctorDetails() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#f0f4f8]">
-        <LoadingSpinner />
+        <Loader />
       </div>
     )
   }
