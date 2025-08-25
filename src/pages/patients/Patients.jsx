@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import PatientsList from "./components/PatientsList";
 import PrimaryInput from "../../core/components/PrimaryInput";
 import Pagination from "../../core/components/Pagination";
@@ -11,42 +11,34 @@ import { useQuery } from "../../core/hooks/useQuery";
 import { Endpoints } from "../../core/utils/endpoints";
 
 const Patients = () => {
-  const searchRef = useRef(null);
-  const [visitTypes, setVisitTypes] = useState([]);
+  const [statuses, setStatuses] = useState([]);
   const [filters, setFilters] = useState({
-    fullName: "",
-    visitType: "",
+    statusId: "",
     page: 1,
   });
 
   const { state, refetch } = useQuery(Endpoints.patients, "GET", filters);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      refetch(filters);
-    }, 300);
+    const timer = setTimeout(() => refetch(filters), 300);
     return () => clearTimeout(timer);
   }, [filters]);
 
   useEffect(() => {
-    const fetchVisitTypes = async () => {
+    const fetchStatuses = async () => {
       try {
         const res = await apiClient.get(`${Endpoints.patients}/visit-type`);
-        setVisitTypes(res.data.data);
+        setStatuses(res.data || []);
       } catch (err) {
-        toast.error(`Failed to load visit types: ${err.message}`);
+        toast.error(`Failed to load statuses: ${err.message}`);
       }
     };
-    fetchVisitTypes();
+    fetchStatuses();
   }, []);
 
-  const handleSearchChange = (e) => {
-    setFilters((prev) => ({ ...prev, fullName: e.target.value, page: 1 }));
-  };
-
-  const handleVisitTypeFilter = (index) => {
-    const selectedType = index === 0 ? "" : visitTypes[index - 1];
-    setFilters((prev) => ({ ...prev, visitType: selectedType, page: 1 }));
+  const handleStatusFilter = (index) => {
+    const selectedStatus = index === 0 ? "" : statuses[index - 1]?.value;
+    setFilters((prev) => ({ ...prev, statusId: selectedStatus, page: 1 }));
   };
 
   const pageChangeHandler = ({ selected }) => {
@@ -63,31 +55,28 @@ const Patients = () => {
     }
   };
 
-  const changeVisitType = async (id, newType) => {
-    if (!id || !newType) {
-      toast.error("Patient ID and visit type are required");
+  const changeStatus = async (id, newStatusId) => {
+    if (!id || !newStatusId) {
+      toast.error("Patient ID and status are required");
       return;
     }
 
-    const toastId = toast.loading("Updating visit type...");
-    
+    const toastId = toast.loading("Updating status...");
     try {
       await apiClient.patch(`${Endpoints.patients}/${id}/visit-type`, {
-        visitType: newType,
+        statusId: newStatusId,
       });
-
       await refetch(filters);
 
       toast.update(toastId, {
-        render: "Visit type updated successfully!",
+        render: "Status updated successfully!",
         type: "success",
         isLoading: false,
         autoClose: 3000,
       });
     } catch (err) {
-      console.log(visitTypes);
       toast.update(toastId, {
-        render: err.response?.data?.message || "Failed to update visit type",
+        render: err.response?.data?.message || "Failed to update status",
         type: "error",
         isLoading: false,
         autoClose: 5000,
@@ -101,22 +90,29 @@ const Patients = () => {
         <header className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col sm:flex-row gap-4 w-full">
             <PrimaryInput
-              placeholder="Search by name..."
-              onChange={handleSearchChange}
-              ref={searchRef}
-              value={filters.fullName}
-              className="flex-1 min-w-[200px]"
+              placeholder="Search by Name or Serial Number..."
+              value={filters.search || ""}
+              onChange={(e) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  search: e.target.value,
+                  page: 1,
+                }))
+              }
             />
 
             <PrimaryDropDown
-              text={filters.visitType ? filters.visitType : "All Visit Types"}
-              onSelect={handleVisitTypeFilter}
+              text={
+                statuses.find((s) => s.value === filters.statusId)?.label ||
+                "All Statuses"
+              }
+              onSelect={handleStatusFilter}
               className="min-w-[150px]"
             >
-              <p>All</p>
-              {visitTypes.map((type, index) => (
-                <p key={index} className="whitespace-nowrap">
-                  {type}
+              <p key="all">All</p>
+              {statuses.map((status) => (
+                <p key={status.value} className="whitespace-nowrap">
+                  {status.label}
                 </p>
               ))}
             </PrimaryDropDown>
@@ -129,23 +125,23 @@ const Patients = () => {
           </div>
         </header>
 
-        {state.loading ? (
-          <p className="text-center text-gray-500">Loading...</p>
-        ) : (
-          <>
-            <PatientsList
-              patients={state.data?.data || []}
-              visitTypes={visitTypes}
-              changeVisitType={changeVisitType}
-              deletePatient={deletePatient}
+        {/* ✅ دايمًا نعرض PatientsList */}
+        <PatientsList
+          patients={state.data?.data || []}
+          statuses={statuses}
+          changeStatus={changeStatus}
+          deletePatient={deletePatient}
+          loading={state.loading}
+        />
+
+        {/* ✅ نخفي Pagination لو بيحمل */}
+        {!state.loading && (
+          <div className="flex justify-center mt-8">
+            <Pagination
+              totalPages={state.data?.totalPages || 1}
+              pageChangeHandler={pageChangeHandler}
             />
-            <div className="flex justify-center mt-8">
-              <Pagination
-                totalPages={state.data?.totalPages || 1}
-                pageChangeHandler={pageChangeHandler}
-              />
-            </div>
-          </>
+          </div>
         )}
       </div>
     </div>

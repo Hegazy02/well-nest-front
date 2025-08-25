@@ -1,476 +1,144 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router";
-import { FaUserDoctor, FaBedPulse } from "react-icons/fa6";
-import { RiHotelBedLine } from "react-icons/ri";
+import { RiHotelBedLine, RiStethoscopeLine } from "react-icons/ri";
+import { LuHospital, LuCalendarCheck } from "react-icons/lu";
 import { BsCalendarWeek } from "react-icons/bs";
-import { RiStethoscopeLine } from "react-icons/ri";
-import { LuHospital } from "react-icons/lu";
-import { LuCalendarCheck } from "react-icons/lu";
-import { MdDashboardCustomize } from "react-icons/md";
-import { PiFlowerLotusLight } from "react-icons/pi";
 import { MdOutlineDashboardCustomize } from "react-icons/md";
+import { HiMenu, HiX } from "react-icons/hi";
+import { GiHospitalCross } from "react-icons/gi";
 import { useAuth } from "../../context/AuthContext";
-import { FaCalendarCheck ,FaCalendarAlt ,FaHospital } from "react-icons/fa";
-
 
 const Sidebar = ({ onClick }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleSidebar = () => setIsOpen(!isOpen);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { logout } = useAuth();
   const navigate = useNavigate();
+
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
+
+  const handleCloseSidebar = () => setIsSidebarOpen(false);
+
   return (
     <>
-      {/* Mobile Top Bar */}
-      <div className="md:hidden flex items-center justify-between bg-gray-100 px-4 py-3 text-blue-950">
+      {/* ✅ Topbar (Mobile only) */}
+      <div className="md:hidden fixed top-0 left-0 w-full z-50 flex items-center justify-between bg-gray-100 px-4 py-3 text-blue-950 shadow-md">
         <div className="flex items-center">
-          {/* <Stethoscope className="w-10 h-10 " /> */}
+          <GiHospitalCross size={36} className="text-blue-950" />
           <span className="ml-2 text-xl font-bold">Well Nest</span>
         </div>
-        <button onClick={toggleSidebar}>
-          {/* <FaBars className="w-6 h-6" /> */}
+
+        <button
+          onClick={toggleSidebar}
+          className="p-2 rounded-md hover:bg-gray-200 focus:outline-none"
+        >
+          <HiMenu size={28} />
         </button>
       </div>
 
-      {/* Sidebar */}
+      {/* ✅ Sidebar (Mobile + Desktop) */}
       <div
-        className={`min-w-70 fixed md:static top-0 left-0  w-65 z-50 transform transition-transform  
-        ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 md:flex md:flex-col`}
+        className={`fixed md:static top-0 left-0 w-full md:w-64 bg-gray-100 z-50 transform transition-transform duration-300 shadow-lg md:shadow-none ${
+    isSidebarOpen ? "translate-y-0" : "-translate-y-full"
+  } md:translate-y-0 md:flex md:flex-col`}
       >
-        <div className="bg-gray-100  text-lg flex-1 pt-10 flex flex-col justify-between h-screen">
-          <div>
-            <div className="hidden md:flex items-center px-4 py-8">
-              <PiFlowerLotusLight className="w-10 h-10  " />
-              <span className="px-2 text-3xl font-bold  text-blue-950">
-                Well Nest
-              </span>
-            </div>
-
-            <nav>
-              <ul className="space-y-5 px-6 py-5 text-gray-400">
-                <li>
-                  <NavLink
-                    to="/"
-                    className={({ isActive }) =>
-                      `flex items-center px-2 py-2 rounded-full transition ${
-                        isActive
-                          ? "bg-cyan-200 text-blue-950"
-                          : "hover:bg-cyan-200 hover:text-blue-950"
-                      }`
-                    }
-                    onClick={() => {
-                      setIsOpen(false);
-                      onClick("Dashboard");
-                    }}
-                  >
-                  <MdOutlineDashboardCustomize className="w-6 h-6 mr-2"/>
-                    Dashboard
-                  </NavLink>
-                </li>
-
-                <li>
-                  <NavLink
-                    to="/doctors"
-                    className={({ isActive }) =>
-                      `flex items-center px-2 py-2 rounded-full transition ${
-                        isActive
-                          ? "bg-cyan-200 text-blue-950"
-                          : "hover:bg-cyan-200 hover:text-blue-950"
-                      }`
-                    }
-                    onClick={() => {
-                      setIsOpen(false);
-                      onClick("Doctors");
-                    }}
-                  >
-                  <RiStethoscopeLine className="w-6 h-6 mr-2" />
-                    Doctor
-                  </NavLink>
-                </li>
-
-                <li>
-                  <NavLink
-                    to="/calendar"
-                    className={({ isActive }) =>
-                      `flex items-center px-2 py-2 rounded-full transition ${
-                        isActive
-                          ? "bg-cyan-200 text-blue-950"
-                          : "hover:bg-cyan-200 hover:text-blue-950"
-                      }`
-                    }
-                    onClick={() => {
-                      setIsOpen(false);
-                      onClick("Schedule");
-                    }}
-                  >
-<LuCalendarCheck className="w-6 h-6 mr-2" />
-
-                    Doctors’ Schedule
-                  </NavLink>
-                </li>
-
-                <li>
-                  <NavLink
-                    to="/patients"
-                    className={({ isActive }) =>
-                      `flex items-center px-2 py-2 rounded-full transition ${
-                        isActive
-                          ? "bg-cyan-200 text-blue-950"
-                          : "hover:bg-cyan-200 hover:text-blue-950"
-                      }`
-                    }
-                    onClick={() => {
-                      setIsOpen(false);
-                      onClick("Patients");
-                    }}
-                  >
-                  <RiHotelBedLine className="w-6 h-6 mr-2" />
-
-                    Patient
-                  </NavLink>
-                </li>
-
-                <li>
-                  <NavLink
-                    to="/departments"
-                    className={({ isActive }) =>
-                      `flex items-center px-2 py-2 rounded-full transition ${
-                        isActive
-                          ? "bg-cyan-200 text-blue-950"
-                          : "hover:bg-cyan-200 hover:text-blue-950"
-                      }`
-                    }
-                    onClick={() => {
-                      setIsOpen(false);
-                      onClick("Departments");
-                    }}
-                  >
-                  <LuHospital className="w-6 h-6 mr-2"  />
-
-                    Department
-                  </NavLink>
-                </li>
-
-                <li>
-                  <NavLink
-                    to="/appointments"
-                    className={({ isActive }) =>
-                      `flex items-center px-2 py-2 rounded-full transition ${
-                        isActive
-                          ? "bg-cyan-200 text-blue-950"
-                          : "hover:bg-cyan-200 hover:text-blue-950"
-                      }`
-                    }
-                    onClick={() => {
-                      setIsOpen(false);
-                      onClick("Appointments");
-                    }}
-                  >
-<BsCalendarWeek className="w-6 h-6 mr-2"  />
-
-                    Appointments
-                  </NavLink>
-                </li>
-              </ul>
-            </nav>
-            <div className="px-6">
-              <button
-                className="w-full px-6 py-2 bg-red-500 text-white rounded-full font-semibold hover:bg-red-600 transition cursor-pointer my-6"
-                onClick={() => {
-                  logout();
-                  navigate("/login");
-                }}
-              >
-                Logout
+        <div className="text-blue-950 text-lg pt-5 h-screen flex flex-col justify-between">
+          <div className="overflow-y-auto">
+            {/* Header (Mobile close btn) */}
+            <div className="flex items-center justify-between px-4 pb-4 md:hidden">
+              <span className="text-2xl font-bold">Well Nest</span>
+              <button onClick={toggleSidebar}>
+                <HiX size={26} />
               </button>
             </div>
+
+            {/* Header (Desktop only) */}
+            <div className="hidden md:flex items-center px-4 py-8">
+              <GiHospitalCross className="w-10 h-10" />
+              <span className="px-2 text-3xl font-bold">Well Nest</span>
+            </div>
+
+            {/* Links */}
+            <nav>
+              <ul className="space-y-5 px-6 py-5 text-gray-400">
+                {[
+                  {
+                    to: "/",
+                    icon: <MdOutlineDashboardCustomize className="w-6 h-6 mr-2" />,
+                    label: "Dashboard",
+                  },
+                  {
+                    to: "/doctors",
+                    icon: <RiStethoscopeLine className="w-6 h-6 mr-2" />,
+                    label: "Doctor",
+                  },
+                  {
+                    to: "/calendar",
+                    icon: <LuCalendarCheck className="w-6 h-6 mr-2" />,
+                    label: "Doctors’ Schedule",
+                  },
+                  {
+                    to: "/patients",
+                    icon: <RiHotelBedLine className="w-6 h-6 mr-2" />,
+                    label: "Patient",
+                  },
+                  {
+                    to: "/departments",
+                    icon: <LuHospital className="w-6 h-6 mr-2" />,
+                    label: "Department",
+                  },
+                  {
+                    to: "/appointments",
+                    icon: <BsCalendarWeek className="w-6 h-6 mr-2" />,
+                    label: "Appointments",
+                  },
+                ].map(({ to, icon, label }) => (
+                  <li key={to}>
+                    <NavLink
+                      to={to}
+                      className={({ isActive }) =>
+                        `flex items-center px-2 py-2 rounded-full transition ${
+                          isActive
+                            ? "bg-cyan-200 text-blue-950"
+                            : "hover:bg-cyan-200 hover:text-blue-950"
+                        }`
+                      }
+                      onClick={() => {
+                        handleCloseSidebar();
+                        onClick(label);
+                      }}
+                    >
+                      {icon}
+                      {label}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
+
+          {/* Logout */}
+          <div className="px-6 pb-6">
+            <button
+              className="w-full px-6 py-2 border-blue-950 text-blue-950 border-2 rounded-full font-semibold hover:bg-blue-950 hover:text-white transition cursor-pointer"
+              onClick={() => {
+                logout();
+                navigate("/login");
+              }}
+            >
+              Logout
+            </button>
           </div>
         </div>
       </div>
+
+      {/* ✅ Overlay خلفية تغلق السايدبار */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 backdrop-blur bg-white/30 z-40 md:hidden"
+          onClick={handleCloseSidebar}
+        />
+      )}
     </>
   );
 };
 
 export default Sidebar;
-
-
-//================================================
-// import React, { useState } from "react";
-// import { NavLink, useNavigate } from "react-router";
-// import { PiFlowerLotusLight } from "react-icons/pi";
-// import { MdOutlineDashboardCustomize } from "react-icons/md";
-// import { RiStethoscopeLine, RiHotelBedLine } from "react-icons/ri";
-// import { LuHospital, LuCalendarCheck } from "react-icons/lu";
-// import { BsCalendarWeek } from "react-icons/bs";
-// import { FaBars, FaTimes } from "react-icons/fa";
-// import { useAuth } from "../../context/AuthContext";
-
-// const Sidebar = ({ onClick }) => {
-//   const [isOpen, setIsOpen] = useState(false);
-//   const { logout } = useAuth();
-//   const navigate = useNavigate();
-
-//   const toggleSidebar = () => setIsOpen(!isOpen);
-
-//   return (
-//     <>
-//       {/* Mobile Top Bar */}
-//       <div className="md:hidden flex items-center justify-between bg-gray-100 px-4 py-3 text-blue-950 shadow">
-//         <div className="flex items-center">
-//           <span className="ml-2 text-xl font-bold">Well Nest</span>
-//         </div>
-//         <button onClick={toggleSidebar}>
-//           {isOpen ? <FaTimes className="w-6 h-6" /> : <FaBars className="w-6 h-6" />}
-//         </button>
-//       </div>
-
-//       {/* Overlay for Mobile */}
-//       {isOpen && (
-//         <div
-//           className="fixed inset-0 bg-black/50 z-40 md:hidden"
-//           onClick={toggleSidebar}
-//         />
-//       )}
-
-//       {/* Sidebar */}
-//       <div
-//         className={`fixed md:static top-0 left-0 w-64 bg-gray-100 z-50 transform transition-transform duration-300
-//         ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 md:flex md:flex-col h-full`}
-//       >
-//         <div className="flex flex-col justify-between h-full pt-10">
-//           <div>
-//             <div className="hidden md:flex items-center px-4 py-8">
-//               <PiFlowerLotusLight className="w-10 h-10" />
-//               <span className="px-2 text-3xl font-bold text-blue-950">Well Nest</span>
-//             </div>
-
-//             <nav>
-//               <ul className="space-y-4 px-6 py-4 text-gray-400">
-//                 <SidebarLink
-//                   to="/"
-//                   label="Dashboard"
-//                   Icon={MdOutlineDashboardCustomize}
-//                   onClick={() => onClick("Dashboard")}
-//                   setIsOpen={setIsOpen}
-//                 />
-//                 <SidebarLink
-//                   to="/doctors"
-//                   label="Doctor"
-//                   Icon={RiStethoscopeLine}
-//                   onClick={() => onClick("Doctors")}
-//                   setIsOpen={setIsOpen}
-//                 />
-//                 <SidebarLink
-//                   to="/calendar"
-//                   label="Doctors’ Schedule"
-//                   Icon={LuCalendarCheck}
-//                   onClick={() => onClick("Schedule")}
-//                   setIsOpen={setIsOpen}
-//                 />
-//                 <SidebarLink
-//                   to="/patients"
-//                   label="Patient"
-//                   Icon={RiHotelBedLine}
-//                   onClick={() => onClick("Patients")}
-//                   setIsOpen={setIsOpen}
-//                 />
-//                 <SidebarLink
-//                   to="/departments"
-//                   label="Department"
-//                   Icon={LuHospital}
-//                   onClick={() => onClick("Departments")}
-//                   setIsOpen={setIsOpen}
-//                 />
-//                 <SidebarLink
-//                   to="/appointments"
-//                   label="Appointments"
-//                   Icon={BsCalendarWeek}
-//                   onClick={() => onClick("Appointments")}
-//                   setIsOpen={setIsOpen}
-//                 />
-//               </ul>
-//             </nav>
-//           </div>
-
-//           <div className="px-6 pb-6">
-//             <button
-//               className="w-full px-6 py-2 bg-red-500 text-white rounded-full font-semibold hover:bg-red-600 transition"
-//               onClick={() => {
-//                 logout();
-//                 navigate("/login");
-//               }}
-//             >
-//               Logout
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-//     </>
-//   );
-// };
-
-// // SidebarLink Component to reduce repetition
-// const SidebarLink = ({ to, label, onClick, setIsOpen }) => (
-//   <li>
-//     <NavLink
-//       to={to}
-//       className={({ isActive }) =>
-//         `flex items-center px-3 py-2 rounded-full transition-all ${
-//           isActive
-//             ? "bg-cyan-200 text-blue-950 font-semibold"
-//             : "hover:bg-cyan-100 hover:text-blue-950"
-//         }`
-//       }
-//       onClick={() => {
-//         setIsOpen(false);
-//         onClick();
-//       }}
-//     >
-//       {label}
-//     </NavLink>
-//   </li>
-// );
-
-// export default Sidebar;
-
-
-
-// import React, { useState } from "react";
-// import { NavLink, useNavigate } from "react-router";
-// import { PiFlowerLotusLight } from "react-icons/pi";
-// import { MdOutlineDashboardCustomize } from "react-icons/md";
-// import { RiStethoscopeLine, RiHotelBedLine } from "react-icons/ri";
-// import { LuHospital, LuCalendarCheck } from "react-icons/lu";
-// import { BsCalendarWeek } from "react-icons/bs";
-// import { FaBars, FaTimes } from "react-icons/fa";
-// import { useAuth } from "../../context/AuthContext";
-
-// const Sidebar = ({ onClick }) => {
-//   const [isOpen, setIsOpen] = useState(false);
-//   const { logout } = useAuth();
-//   const navigate = useNavigate();
-
-//   const toggleSidebar = () => setIsOpen(!isOpen);
-
-//   return (
-//     <>
-//       {/* Mobile Top Bar */}
-//       <div className="md:hidden flex items-center justify-between bg-gray-100 px-4 py-3 text-blue-950 shadow">
-//         <div className="flex items-center">
-//           <span className="ml-2 text-xl font-bold">Well Nest</span>
-//         </div>
-//         <button onClick={toggleSidebar}>
-//           {isOpen ? <FaTimes className="w-6 h-6" /> : <FaBars className="w-6 h-6" />}
-//         </button>
-//       </div>
-
-//       {/* Overlay for Mobile */}
-//       {isOpen && (
-//         <div
-//           className="fixed inset-0 bg-black/50 z-40 md:hidden"
-//           onClick={toggleSidebar}
-//         />
-//       )}
-
-//       {/* Sidebar */}
-//       <div
-//         className={`fixed md:static top-0 left-0 w-64 bg-gray-100 z-50 transform transition-transform duration-300
-//         ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 md:flex md:flex-col h-full`}
-//       >
-//         <div className="flex flex-col justify-between h-full pt-10">
-//           <div>
-//             <div className="hidden md:flex items-center px-4 py-8">
-//               <PiFlowerLotusLight className="w-10 h-10" />
-//               <span className="px-2 text-3xl font-bold text-blue-950">Well Nest</span>
-//             </div>
-
-//             <nav>
-//               <ul className="space-y-4 px-6 py-4 text-gray-400">
-//                 <SidebarLink
-//                   to="/"
-//                   label="Dashboard"
-//                   Icon={MdOutlineDashboardCustomize}
-//                   onClick={() => onClick("Dashboard")}
-//                   setIsOpen={setIsOpen}
-//                 />
-//                 <SidebarLink
-//                   to="/doctors"
-//                   label="Doctor"
-//                   Icon={RiStethoscopeLine}
-//                   onClick={() => onClick("Doctors")}
-//                   setIsOpen={setIsOpen}
-//                 />
-//                 <SidebarLink
-//                   to="/calendar"
-//                   label="Doctors’ Schedule"
-//                   Icon={LuCalendarCheck}
-//                   onClick={() => onClick("Schedule")}
-//                   setIsOpen={setIsOpen}
-//                 />
-//                 <SidebarLink
-//                   to="/patients"
-//                   label="Patient"
-//                   Icon={RiHotelBedLine}
-//                   onClick={() => onClick("Patients")}
-//                   setIsOpen={setIsOpen}
-//                 />
-//                 <SidebarLink
-//                   to="/departments"
-//                   label="Department"
-//                   Icon={LuHospital}
-//                   onClick={() => onClick("Departments")}
-//                   setIsOpen={setIsOpen}
-//                 />
-//                 <SidebarLink
-//                   to="/appointments"
-//                   label="Appointments"
-//                   Icon={BsCalendarWeek}
-//                   onClick={() => onClick("Appointments")}
-//                   setIsOpen={setIsOpen}
-//                 />
-//               </ul>
-//             </nav>
-//           </div>
-
-//           <div className="px-6 pb-6">
-//             <button
-//               className="w-full px-6 py-2 bg-red-500 text-white rounded-full font-semibold hover:bg-red-600 transition"
-//               onClick={() => {
-//                 logout();
-//                 navigate("/login");
-//               }}
-//             >
-//               Logout
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-//     </>
-//   );
-// };
-
-// // SidebarLink Component to reduce repetition
-// const SidebarLink = ({ to, label, onClick, setIsOpen }) => (
-//   <li>
-//     <NavLink
-//       to={to}
-//       className={({ isActive }) =>
-//         `flex items-center px-3 py-2 rounded-full transition-all ${
-//           isActive
-//             ? "bg-cyan-200 text-blue-950 font-semibold"
-//             : "hover:bg-cyan-100 hover:text-blue-950"
-//         }`
-//       }
-//       onClick={() => {
-//         setIsOpen(false);
-//         onClick();
-//       }}
-//     >
-//       {label}
-//     </NavLink>
-//   </li>
-// );
-
-// export default Sidebar;

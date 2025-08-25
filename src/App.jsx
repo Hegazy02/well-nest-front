@@ -15,6 +15,7 @@ import Patients from "./pages/patients/Patients";
 import PatientDetails from "./pages/patients/PatientDetails";
 import Appointments from "./pages/appointments/Appointments";
 import AddAppointment from "./pages/appointments/AddAppointment";
+import AddMedicalInfo from "./pages/patients/addMedicalInfo";
 import "./index.css";
 import AddPatient from "./pages/patients/AddPatient";
 import Sidebar from "./core/components/layout/Sidebar";
@@ -31,7 +32,7 @@ function App() {
   const shouldHideSidebar = hideSidebarPaths.includes(location.pathname);
   const [title, setTitle] = useState("Dashboard");
   const isNested = location.pathname.split("/").length > 2;
-  console.log("isNested", isNested);
+  // console.log("isNested", isNested);
 
   return (
     <>
@@ -74,6 +75,14 @@ function App() {
                 element={
                   <ProtectedRoute role={"Admin"}>
                     <AddPatient />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/patients/:id/AddMedicalInfo"
+                element={
+                  <ProtectedRoute role={"Admin"}>
+                    <AddMedicalInfo />
                   </ProtectedRoute>
                 }
               />

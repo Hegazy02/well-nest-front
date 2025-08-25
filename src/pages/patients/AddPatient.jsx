@@ -20,18 +20,7 @@ const AddPatient = () => {
   const [chronicDiseases, setChronicDiseases] = useState([]);
   const navigate = useNavigate();
 
-  const formatLabel = (type) => {
-    switch (type) {
-      case "new":
-        return "New Visit";
-      case "checkUp":
-        return "Check-Up";
-      case "emergency":
-        return "Emergency";
-      default:
-        return type;
-    }
-  };
+
 
   const {
     register,
@@ -117,7 +106,6 @@ const AddPatient = () => {
         );
         const options = visitTypeRes.data.data.map((type) => ({
           value: type,
-          label: formatLabel(type),
         }));
         setVisitTypes(options);
         setAllergies(allergiesRes.data.data);
@@ -217,6 +205,12 @@ const AddPatient = () => {
   const isDisabled = (id) => {
     return !!id;
   };
+    const allowOnlyNumbers = (e) => {
+    if (!/[0-9]/.test(e.key) && e.key !== "Backspace" && e.key !== "Tab") {
+      e.preventDefault();
+    }
+  };
+
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
@@ -296,6 +290,7 @@ const AddPatient = () => {
                 name="nationalId"
                 register={register}
                 error={errors.nationalId}
+                onKeyDown={allowOnlyNumbers}
                 disabled={isDisabled(id)}
                 className={
                   isDisabled(id) ? "opacity-70 pointer-events-none" : ""
@@ -304,6 +299,7 @@ const AddPatient = () => {
               <Input
                 label="Phone"
                 name="phone"
+                onKeyDown={allowOnlyNumbers}
                 register={register}
                 error={errors.phone}
               />
@@ -381,11 +377,13 @@ const AddPatient = () => {
               <Input
                 label="Building Number"
                 name="address.buildingNumber"
+                onKeyDown={allowOnlyNumbers}
                 register={register}
                 error={errors.address?.buildingNumber}
               />
               <Input
                 label="Floor"
+                onKeyDown={allowOnlyNumbers}
                 name="address.floor"
                 register={register}
                 error={errors.address?.floor}
@@ -393,6 +391,7 @@ const AddPatient = () => {
               <Input
                 label="Apartment No"
                 name="address.apartment"
+                onKeyDown={allowOnlyNumbers}
                 register={register}
                 error={errors.address?.apartment}
               />
@@ -424,6 +423,7 @@ const AddPatient = () => {
                 <Input
                   label="Phone"
                   name={`emergencyContacts[${index}].contactPhone`}
+                  onKeyDown={allowOnlyNumbers}
                   register={register}
                   error={errors.emergencyContacts?.[index]?.contactPhone}
                 />
@@ -480,12 +480,14 @@ const AddPatient = () => {
               <Input
                 label="Height"
                 name="medicalInfo.bodyHeight"
+                onKeyDown={allowOnlyNumbers}
                 register={register}
                 error={errors.medicalInfo?.bodyHeight}
               />
               <Input
                 label="Weight"
                 name="medicalInfo.bodyWeight"
+                onKeyDown={allowOnlyNumbers}
                 register={register}
                 error={errors.medicalInfo?.bodyWeight}
               />

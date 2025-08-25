@@ -34,7 +34,7 @@ const DoctorsScheduleList = ({ className }) => {
     apiClient
       .get("dashboard/topDoctorsToday", { params: { from, to } })
       .then((res) => {
-        console.log("ressss", res.data.data);
+        // console.log("ressss", res.data.data);
 
         setData(res.data.data || []);
         setLoading(false);

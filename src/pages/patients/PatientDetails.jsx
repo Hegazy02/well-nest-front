@@ -16,6 +16,7 @@ const PatientDetails = () => {
     const fetchPatientData = async () => {
       try {
         const response = await apiClient.get(`/patients/${id}`);
+        console.log("API Patient Data:", response.data.data); // 👈 Debug
         setPatient(response.data.data);
       } catch (error) {
         console.error("Error fetching patient data:", error);
@@ -65,23 +66,28 @@ const PatientDetails = () => {
       </div>
     );
   }
-const emergencyContactsArray = (patient.EmergencyContactIds?.length)
-  ? patient.EmergencyContactIds.map((c, i) => ({
-      label: `Emergency Contact ${i + 1}`,
-      value: `${c.contactName} - ${c.contactPhone} - ${c.relation || "N/A"}`
-    }))
-  : [{ label: "Emergency Contacts", value: "N/A" }];
 
+
+  const emergencyContactsArray = patient.EmergencyContactIds?.length
+    ? patient.EmergencyContactIds.map((c, i) => ({
+        label: `Emergency Contact ${i + 1}`,
+        value: `${c.contactName} - ${c.contactPhone} - ${c.relation || "N/A"}`,
+      }))
+    : [{ label: "Emergency Contacts", value: "N/A" }];
 
   const personalInfo = [
-    { label: "Full Name", value: patient.fullName },
     { label: "National ID", value: patient.nationalId },
-{ 
-  label: "Gender", 
-  value: patient.gender === 0 ? "Male" : patient.gender === 1 ? "Female" : "Unknown" 
-},
-
+    {
+      label: "Gender",
+      value:
+        patient.gender === 0
+          ? "Male"
+          : patient.gender === 1
+          ? "Female"
+          : "Unknown",
+    },
     { label: "Date of Birth", value: formatDate(patient.dateOfBirth) },
+    { label: "Age", value: patient.age },
     { label: "Marital Status", value: patient.maritalStatus },
   ];
 
@@ -94,8 +100,7 @@ const emergencyContactsArray = (patient.EmergencyContactIds?.length)
         patient.AddressId?.buildingNumber || "N/A"
       }, ${patient.AddressId?.floor || "N/A"}`,
     },
-   ...emergencyContactsArray
-
+    ...emergencyContactsArray,
   ];
 
   const medicalInfo = [
@@ -110,7 +115,6 @@ const emergencyContactsArray = (patient.EmergencyContactIds?.length)
       label: "Chronic Diseases",
       value: patient.medicalInfoId?.chronicDiseases?.join(", ") || "None",
     },
-    { label: "Visit Type", value: patient.visitTypeId?.visitType || "N/A" },
   ];
 
   const additionalInfo = [
@@ -148,56 +152,44 @@ const emergencyContactsArray = (patient.EmergencyContactIds?.length)
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
       <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center">
-          <button
-            onClick={() => navigate(-1)}
-            className="mr-4 text-gray-600 hover:text-gray-900"
-          >
-            <svg
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-          </button>
-          <h1 className="text-2xl font-bold text-gray-900">Patient Details</h1>
-        </div>
+        <h1 className="text-2xl font-bold text-gray-900">Patient Details</h1>
       </div>
 
-      <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
+      <div className="shadow overflow-hidden sm:rounded-lg mb-6">
         <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
           <div className="flex items-center space-x-4">
-            <div className="flex-shrink-0">
-              <img
-                className="h-[120px] w-[120px] object-cover rounded-full"
-                src={
-                  patient.image || "https://placehold.co/200x200?text=No+Image"
-                }
-                alt={patient.fullName}
-              />
-            </div>
+            <img
+              className="h-[120px] w-[120px] object-cover rounded-full"
+              src={
+                patient.image || "https://placehold.co/200x200?text=No+Image"
+              }
+              alt={patient.fullName}
+            />
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-3xl font-semibold text-gray-900">
                 {patient.fullName}
               </h2>
               <p className="text-sm text-gray-500">
                 ID: {patient.serialNumber || "N/A"}
               </p>
+              <p className="text-sm text-gray-500">Status:{patient.statusId?.name || "N/A"}</p>
             </div>
           </div>
+          <div>
           <PrimaryButton
+          className="mb-5"
             variant="outline"
             onClick={() => navigate(`/patients/${patient._id}/update`)}
           >
             Edit Patient
           </PrimaryButton>
+              <PrimaryButton
+            variant="outline"
+            onClick={() => navigate(`/patients/${patient._id}/AddMedicalInfo`)}
+          >
+            add Medicalinfo
+          </PrimaryButton>
+          </div>
         </div>
       </div>
 
