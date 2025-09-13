@@ -9,7 +9,7 @@ import { LuCalendarCheck } from "react-icons/lu";
 import { MdDashboardCustomize } from "react-icons/md";
 import { PiFlowerLotusLight } from "react-icons/pi";
 import { MdOutlineDashboardCustomize } from "react-icons/md";
-import { useAuth } from "../../context/AuthContext";
+import { UseAuth as useAuth } from "../../context/AuthContext";
 import { FaCalendarCheck ,FaCalendarAlt ,FaHospital } from "react-icons/fa";
 
 

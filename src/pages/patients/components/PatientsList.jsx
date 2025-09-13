@@ -9,9 +9,9 @@ import Skeleton from "react-loading-skeleton";
 
 const PatientsList = ({
   patients = [],
-  visitTypes = [],
+  status = [],
   deletePatient,
-  changeVisitType,
+  changestatus,
 }) => {
   const columns = [
     { name: "Name", className: "flex-3" },
@@ -20,7 +20,7 @@ const PatientsList = ({
     { name: "Age", className: "flex-2" },
     { name: "Gender", className: "flex-2" },
     { name: "Blood Type", className: "flex-2" },
-    { name: "Visit Type", className: "flex-2" },
+    { name: "Status Type", className: "flex-3" },
     { name: "Actions", className: "flex-1" },
   ];
 
@@ -33,17 +33,20 @@ const PatientsList = ({
     return genderMapper[gender] || "Unknown";
   };
 
-  const visitTypeColors = {
-    new: "bg-blue-100 text-blue-700 border-blue-300",
-    checkup: "bg-green-100 text-green-700 border-green-300",
-    emergency: "bg-yellow-100 text-yellow-800 border-yellow-300",
-    deceased: "bg-red-100 text-red-700 border-red-300",
+  const statusColors = {
+    "pending": "bg-gray-100 text-gray-700 border-gray-300",
+    "clinic appointment": "bg-blue-100 text-blue-700 border-blue-300",
+    "under treatment": "bg-yellow-100 text-yellow-800 border-yellow-300",
+    "scheduled for surgery": "bg-purple-100 text-purple-700 border-purple-300",
+    "post-surgery": "bg-indigo-100 text-indigo-700 border-indigo-300",
+    "emergency": "bg-red-100 text-red-700 border-red-300",
+    "discharged": "bg-green-100 text-green-700 border-green-300",
   };
 
-  const getVisitTypeColor = (visitType) => {
-    if (!visitType) return "bg-gray-100 text-gray-700 border-gray-300";
+  const getStatusTypeColor = (status) => {
+    if (!status) return "bg-gray-100 text-gray-700 border-gray-300";
     return (
-      visitTypeColors[visitType.toLowerCase()] ||
+      statusColors[status.toLowerCase()] ||
       "bg-gray-100 text-gray-700 border-gray-300"
     );
   };
@@ -82,7 +85,10 @@ const PatientsList = ({
                 <Link to={`${patient._id}`}>
                   <div className="flex items-center gap-2">
                     <img
-                      src={patient.image || "https://placehold.co/48x48?text=No+Image"}
+                      src={
+                        patient.image ||
+                        "https://placehold.co/48x48?text=No+Image"
+                      }
                       alt={patient.fullName}
                       className="w-10 h-10 rounded-full object-cover"
                     />
@@ -96,21 +102,20 @@ const PatientsList = ({
                 <div>{patient.age || "N/A"}</div>
                 <div>{getGender(patient.gender)}</div>
                 <div>{patient.medicalInfoId?.bloodType || "N/A"}</div>
-
                 <PrimaryDropDown
-                  text={patient.visitTypeId?.visitType || "N/A"}
+                  text={patient.statusId?.statusTypes || "N/A"}
                   onSelect={(index) => {
-                    const selectedVisitType = visitTypes[index];
-                    changeVisitType(patient._id, selectedVisitType);
+                    const selectedStatus = status[index];
+                    changestatus(patient._id, selectedStatus._id);
                   }}
                   hasIcon={false}
                   className="flex-1 w-37"
-                  textClassName={`border px-2 p-1 rounded-lg w-full ${getVisitTypeColor(
-                    patient.visitTypeId?.visitType
+                  textClassName={` px-2 p-1 rounded-lg w-full ${getStatusTypeColor(
+                    patient.statusId?.statusTypes
                   )}`}
                 >
-                  {visitTypes.map((type) => (
-                    <p key={type}>{type}</p>
+                  {status.map((type) => (
+                    <p key={type._id}>{type.statusTypes}</p>
                   ))}
                 </PrimaryDropDown>
 
@@ -143,7 +148,9 @@ const PatientsList = ({
             >
               <div className="flex items-center gap-3">
                 <img
-                  src={patient.image || "https://placehold.co/48x48?text=No+Image"}
+                  src={
+                    patient.image || "https://placehold.co/48x48?text=No+Image"
+                  }
                   alt={patient.fullName}
                   className="w-12 h-12 rounded-full object-cover"
                 />
@@ -154,26 +161,35 @@ const PatientsList = ({
               </div>
 
               <div className="flex flex-wrap gap-2 text-sm text-gray-700">
-                <span><b>Serial:</b> {patient.serialNumber || "N/A"}</span>
-                <span><b>Age:</b> {patient.age || "N/A"}</span>
-                <span><b>Gender:</b> {getGender(patient.gender)}</span>
-                <span><b>Blood:</b> {patient.medicalInfoId?.bloodType || "N/A"}</span>
+                <span>
+                  <b>Serial:</b> {patient.serialNumber || "N/A"}
+                </span>
+                <span>
+                  <b>Age:</b> {patient.age || "N/A"}
+                </span>
+                <span>
+                  <b>Gender:</b> {getGender(patient.gender)}
+                </span>
+                <span>
+                  <b>Blood:</b> {patient.medicalInfoId?.bloodType || "N/A"}
+                </span>
               </div>
 
+              {/* Mobile */}
               <PrimaryDropDown
-                text={patient.visitTypeId?.visitType || "N/A"}
+                text={patient.statusId?.statusTypes || "N/A"}
                 onSelect={(index) => {
-                  const selectedVisitType = visitTypes[index];
-                  changeVisitType(patient._id, selectedVisitType);
+                  const selectedStatus = status[index];
+                  changestatus(patient._id, selectedStatus.statusTypes);
                 }}
                 hasIcon={false}
                 className="w-full"
-                textClassName={`border px-2 p-1 rounded-lg w-full ${getVisitTypeColor(
-                  patient.visitTypeId?.visitType
+                textClassName={`border px-2 p-1 rounded-lg w-full ${getStatusTypeColor(
+                  patient.statusId?.statusTypes
                 )}`}
               >
-                {visitTypes.map((type) => (
-                  <p key={type}>{type}</p>
+                {status.map((type) => (
+                  <p key={type._id}>{type.statusTypes}</p>
                 ))}
               </PrimaryDropDown>
 
