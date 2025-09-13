@@ -132,7 +132,7 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { useAuth } from "../../core/context/AuthContext";
+import { UseAuth as useAuth } from "../../core/context/AuthContext";
 import PrimaryButton from "../../core/components/PrimaryButton";
 import loginImage from "/hospital.jpg"
 

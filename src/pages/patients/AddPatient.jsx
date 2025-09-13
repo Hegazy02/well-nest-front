@@ -4,10 +4,10 @@ import { Input } from "./components/Input";
 import PrimaryDate from "../../core/components/PrimaryDate";
 import PrimarySelect from "../../core/components/PrimarySelect";
 import MultiTagInput from "./components/MultiTagInput";
+import PrimaryButton from "../../core/components/PrimaryButton";
 import { toast } from "react-toastify";
 import { apiClient } from "../../core/utils/apiClient";
-import { useNavigate, useParams } from "react-router";
-import PrimaryButton from "../../core/components/PrimaryButton";
+import { useParams } from "react-router";
 import { TbXboxX } from "react-icons/tb";
 import { MdDeleteOutline } from "react-icons/md";
 import { Endpoints } from "../../core/utils/endpoints";
@@ -15,10 +15,9 @@ import { Endpoints } from "../../core/utils/endpoints";
 const AddPatient = () => {
   const { id } = useParams();
   const [imagePreview, setImagePreview] = useState(null);
-  const [visitTypes, setVisitTypes] = useState([]);
+  const [statusTypes, setStatusTypes] = useState([]);
   const [allergies, setAllergies] = useState([]);
   const [chronicDiseases, setChronicDiseases] = useState([]);
-  const navigate = useNavigate();
 
   const formatLabel = (type) => {
     switch (type) {
@@ -50,7 +49,7 @@ const AddPatient = () => {
       dateOfBirth: "",
       gender: "",
       maritalStatus: "",
-      visitType: "",
+      statusId: "",
       image: null,
       address: {
         street: "",
@@ -108,18 +107,18 @@ const AddPatient = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const visitTypeRes = await apiClient.get("/patients/visit-type");
+        const statusTypeRes = await apiClient.get(`/${Endpoints.patients}/statustypes`);
         const allergiesRes = await apiClient.get(
           "/patients/medical-info/allergies"
         );
         const chronicRes = await apiClient.get(
           "/patients/medical-info/chronicDiseases"
         );
-        const options = visitTypeRes.data.data.map((type) => ({
+        const options = statusTypeRes.data.data.map((type) => ({
           value: type,
           label: formatLabel(type),
         }));
-        setVisitTypes(options);
+        setStatusTypes(options);        
         setAllergies(allergiesRes.data.data);
         setChronicDiseases(chronicRes.data.data);
       } catch (err) {
@@ -142,10 +141,10 @@ const AddPatient = () => {
           dateOfBirth: d.dateOfBirth ? d.dateOfBirth.split("T")[0] : "",
           gender: d.gender !== undefined ? String(d.gender) : "",
           maritalStatus: d.maritalStatus || "",
-          visitType: d.visitTypeId?.visitType || "checkUp",
+          statusId: d.statusId?.statusType || "Pending",
           image: d.image || null,
-          address: d.AddressId,
-          emergencyContacts: d.EmergencyContactIds,
+          address: d.addressId,
+          emergencyContacts: d.emergencyContactIds,
           medicalInfo: d.medicalInfoId,
         };
         reset(patientFormData);
@@ -175,7 +174,7 @@ const AddPatient = () => {
     appendOrEmpty("dateOfBirth", data.dateOfBirth);
     appendOrEmpty("gender", data.gender);
     appendOrEmpty("maritalStatus", data.maritalStatus);
-    appendOrEmpty("visitType", data.visitType);
+    appendOrEmpty("statusId", data.statusId);
     formData.append("address", JSON.stringify(data.address));
     formData.append(
       "emergencyContacts",
@@ -219,27 +218,10 @@ const AddPatient = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
-      <div className="w-full max-w-7xl bg-white rounded-3xl shadow-lg p-8">
+    <div className="">
+      <div className="w-full max-w-7xl rounded-3xl  p-8">
         <div className="flex justify-between  mb-6">
-          <button
-            onClick={() => navigate(-1)}
-            className="mr-4 text-gray-600 hover:text-gray-900"
-          >
-            <svg
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-          </button>
+      
           <h1 className="text-3xl font-bold text-sky-950">
             {id ? "Edit Patient" : "Add New Patient"}
           </h1>
@@ -357,11 +339,11 @@ const AddPatient = () => {
                 error={errors.maritalStatus}
               />
               <PrimarySelect
-                label="Visit Type"
-                name="visitType"
+                label="Status Type"
+                name="statusId"
                 control={control}
-                options={visitTypes}
-                error={errors.visitType}
+                options={statusTypes}
+                error={errors.statusId}
               />
             </div>
           </div>

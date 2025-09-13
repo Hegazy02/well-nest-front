@@ -8,7 +8,7 @@ import { Endpoints } from "../utils/endpoints";
 import { encrypt } from "n-krypta";
 
 const AuthContext = createContext();
-export const useAuth = () => {
+export const UseAuth = () => {
   return useContext(AuthContext);
 };
 export const AuthProvider = ({ children }) => {
